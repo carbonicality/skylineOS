@@ -436,17 +436,27 @@
             function checkCreds() {
                 const userInput = document.querySelector('.user-tb').value;
                 const passInput = document.querySelector('.passwd-tb').value;
-                const autoLogin = document.querySelectorAll('.c-checkbox input').checked;
+                const autoLogin = document.querySelector('.c-checkbox input').checked;
 
                 if (userInput === 'admin' && passInput === '123456') {
                     if (autoLogin) {
                         localStorage.setItem('skylineOS_autologin', 'true');
+                    } else {
+                        localStorage.removeItem('skylineOS_autologin');
                     }
-                    window.location = '';
+                    alert('creds checked!') // add desktop link here with window.location when done
                 } else {
                     alert('Invalid credentials! Please try again.');
                 }
             }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                    if (localStorage.getItem('skylineOS_autologin') === 'true') {
+                        document.querySelector('.user-tb').value = 'admin';
+                        document.querySelector('.passwd-tb').value = '123456';
+                        checkCreds();
+                    }
+            })
 
             function reboot() {
                 window.location = 'shutdown.html';
