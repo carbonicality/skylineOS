@@ -308,17 +308,67 @@
                 border-width: 0 2px 2px 0;
                 transform: rotate(45deg);
             }
+
+            .context-menu-lgn {
+                width: 130px;
+                display: none;
+                position: absolute;
+                flex-direction: column;
+                background-color: #2a2a2a;
+                border: 1.5px solid #464748;
+                color: white;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+                overflow: hidden;
+                margin-top: 3px;
+            }
+
+            .menu-item {
+                font-family: 'terminus';
+                background-color: transparent;
+                color: white;
+                border: 0;
+                height: 25px;
+                display: flex;
+                align-items: center;
+                padding: 0;
+                width: 100%;
+            }
+
+            .menu-item:hover {
+                background-color: #7b7bac;
+                border: none;
+            }
+
+            .context-menu-thing {
+                width: 20px;
+                height: 100%;
+                background-color: #2f3030;
+                image-rendering: pixelated;
+            }
+
+            .m-text {
+                padding-left: 5px;
+            }
+
         </style>
     </head>
     <body>
         <div class="topbar">
-            <button class="tb-button-sel">Login App</button>
-            <button class="tb-button">About</button>
+            <button class="tb-button-sel" id="loginAppBtn">Login App</button>
+            <button class="tb-button" onclick="alert('Login Manager v1.0.0')">About</button>
             <div class="topbar-lines"></div>
             <p class="time-display" id="time">00:00</p>
             <p> |&nbsp;</p>
             <p class="date-display" id="date">0/0/0</p>
         </div>
+
+        <div class="context-menu-lgn">
+            <button class="menu-item" onclick="reboot()">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Reboot...</span>
+            </button>
+        </div>
+
         <div class="window">
             <div class="titlebar">
                 Log in to SkylineOS
@@ -329,11 +379,11 @@
             <div class="form">
                 <div class="username-container">
                     User name:
-                    <input class="passwd-tb" type="text">
+                    <input class="user-tb" placeholder="hint: the username is admin" type="text">
                 </div>
                 <div class="passwd-container">
                     Password:&nbsp;
-                    <input class="passwd-tb" type="password">
+                    <input class="passwd-tb" placeholder="hint: the password is 123456" type="password">
                 </div>
                 <label class="c-checkbox">
                     <input type="checkbox">
@@ -342,8 +392,8 @@
                 </label>
             </div>
             <div class="button-row">
-                <button class="tonal-button">Log in</button>
-                <button class="dark-button">Shutdown</button>
+                <button class="tonal-button" onclick="checkCreds()">Log in</button>
+                <button class="dark-button" onclick="reboot()">Reboot</button>
             </div>
         </div>
         <script>
@@ -362,6 +412,49 @@
 
             updateDT();
             setInterval(updateDT, 30000);
+
+            function checkCreds() {
+                const userInput = document.querySelector('.user-tb').value;
+                const passInput = document.querySelector('.passwd-tb').value;
+                const autoLogin = document.querySelectorAll('.c-checkbox input').checked;
+
+                if (userInput === 'admin' && passInput === '123456') {
+                    if (autoLogin) {
+                        localStorage.setItem('skylineOS_autologin', 'true');
+                    }
+                    window.location = '';
+                } else {
+                    alert('Invalid credentials! Please try again.');
+                }
+            }
+
+            function reboot() {
+                window.location = 'bootloader.html';
+            }
+
+            const loginAppBtn = document.getElementById('loginAppBtn');
+            const contextMenuLgn = document.querySelector('.context-menu-lgn');
+
+            function showContextLgn() {
+                const rect = loginAppBtn.getBoundingClientRect();
+                contextMenuLgn.style.left = `${rect.left}px`;
+                contextMenuLgn.style.top = `${rect.bottom}px`;
+                contextMenuLgn.style.display = 'flex';
+            }
+
+            loginAppBtn.addEventListener('click', () => {
+                if (contextMenuLgn.style.display === 'flex') {
+                    contextMenuLgn.style.display = 'none';
+                } else {
+                    showContextLgn();
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!contextMenuLgn.contains(e.target) && e.target !== loginAppBtn) {
+                    contextMenuLgn.style.display = 'none';
+                }
+            })
         </script>
     </body>
 </html>
