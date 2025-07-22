@@ -224,21 +224,37 @@
                 margin-right: 10px;
                 background-color: transparent;
                 color: white;
+                height: 30px;
+                align-items: center;
                 border: none;
                 font-size: 16px;
                 display: flex;
+            }
+
+            .tb-button:hover {
+                background-color: rgba(255,255,255,0.05);
             }
 
             .tb-button-sel {
                 font-family: 'spleen-bold';
                 margin-right: 10px;
                 margin-left: 10px;
+                height: 30px;
                 background-color: transparent;
                 color: white;
                 border: none;
                 font-size: 16px;
                 justify-content: center;
                 display: flex;
+                align-items: center;
+            }
+
+            .tb-button-sel:hover {
+                background-color: rgba(255,255,255,0.05);
+            }
+
+            .tb-button-sel.active {
+                background-color: rgba(255,255,255,0.05);
             }
 
             .topbar-lines {
@@ -354,7 +370,7 @@
     </head>
     <body>
         <div class="topbar">
-            <button class="tb-button-sel" id="loginAppBtn">Login App</button>
+            <button class="tb-button-sel" id="loginAppBtn">Login Manager</button>
             <button class="tb-button" onclick="alert('Login Manager v1.0.0')">About</button>
             <div class="topbar-lines"></div>
             <p class="time-display" id="time">00:00</p>
@@ -363,6 +379,10 @@
         </div>
 
         <div class="context-menu-lgn">
+             <button class="menu-item" onclick="alert('Login Manager v1.0.0')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">About...</span>
+            </button>
             <button class="menu-item" onclick="reboot()">
                 <div class="context-menu-thing"></div>
                 <span class="m-text">Reboot...</span>
@@ -429,7 +449,7 @@
             }
 
             function reboot() {
-                window.location = 'bootloader.html';
+                window.location = 'shutdown.html';
             }
 
             const loginAppBtn = document.getElementById('loginAppBtn');
@@ -445,14 +465,17 @@
             loginAppBtn.addEventListener('click', () => {
                 if (contextMenuLgn.style.display === 'flex') {
                     contextMenuLgn.style.display = 'none';
+                    loginAppBtn.classList.remove('active');
                 } else {
                     showContextLgn();
+                    loginAppBtn.classList.add('active');
                 }
             });
 
             document.addEventListener('click', (e) => {
                 if (!contextMenuLgn.contains(e.target) && e.target !== loginAppBtn) {
                     contextMenuLgn.style.display = 'none';
+                    loginAppBtn.classList.remove('active');
                 }
             })
         </script>
