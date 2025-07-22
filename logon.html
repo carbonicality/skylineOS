@@ -417,6 +417,7 @@
             </div>
         </div>
         <script>
+            // time display logic
             function updateDT() {
                 const now = new Date();
 
@@ -433,6 +434,7 @@
             updateDT();
             setInterval(updateDT, 30000);
 
+            // authentication
             function checkCreds() {
                 const userInput = document.querySelector('.user-tb').value;
                 const passInput = document.querySelector('.passwd-tb').value;
@@ -458,10 +460,12 @@
                     }
             })
 
+            // universal reboot which js goes to shutdown and then bootloader
             function reboot() {
                 window.location = 'shutdown.html';
             }
 
+            // context menu stuff
             const loginAppBtn = document.getElementById('loginAppBtn');
             const contextMenuLgn = document.querySelector('.context-menu-lgn');
 
