@@ -404,6 +404,7 @@
                 height: 30px;
                 bottom: 0;
                 position: fixed;
+                z-index: 2000;
                 display: flex;
                 align-items: center;
             }
@@ -427,6 +428,7 @@
                 background-color: #323232;
                 color: white;
                 font-size: 16px;
+                z-index: 2001;
                 justify-content: flex-start;
                 display: flex;
                 align-items: center;
@@ -563,128 +565,185 @@
                 document.getElementById('date').textContent = `${day}/${month}/${year}`;
             }
 
-            updateDT();
-            setInterval(updateDT, 30000)
+        updateDT();
+        setInterval(updateDT, 30000)
 
-            // universal reboot which js goes to shutdown and then bootloader
-            function reboot() {
-                window.location = 'shutdown.html';
-            }
+        // universal reboot which js goes to shutdown and then bootloader
+        function reboot() {
+            window.location = 'shutdown.html';
+        }
 
-            function launchApp(appName) {
-                alert(`Launching ${appName}... (placeholder btw)`); //change this to actual app loading logic
-                hideAllMenus();
-            }
 
-            function hideAllMenus() {
-                const contextMenuLgn = document.querySelector('.context-menu-lgn');
-                const appsMenu = document.getElementById('apps-menu');
-                const submenus = document.querySelectorAll('.submenu');
-                
-                contextMenuLgn.style.display = 'none';
-                appsMenu.style.display = 'none';
-                submenus.forEach(submenu => submenu.style.display = 'none');
-                
-                document.getElementById('tb-main-btn').classList.remove('active');
-                document.getElementById('apps-btn').classList.remove('active');
-            }
-
-            // context menu stuff for desktop button
-            const tbMainBtn = document.getElementById('tb-main-btn');
+        function hideAllMenus() {
             const contextMenuLgn = document.querySelector('.context-menu-lgn');
-
-            function showContextLgn() {
-                hideAllMenus();
-                const rect = tbMainBtn.getBoundingClientRect();
-                contextMenuLgn.style.left = `${rect.left}px`;
-                contextMenuLgn.style.top = `${rect.bottom}px`;
-                contextMenuLgn.style.display = 'flex';
-                tbMainBtn.classList.add('active');
-            }
-
-            tbMainBtn.addEventListener('click', () => {
-                if (contextMenuLgn.style.display === 'flex') {
-                    hideAllMenus();
-                } else {
-                    showContextLgn();
-                }
-            });
-
-            const appsBtn = document.getElementById('apps-btn');
             const appsMenu = document.getElementById('apps-menu');
+            const submenus = document.querySelectorAll('.submenu');
 
-            function showAppsMenu() {
+            contextMenuLgn.style.display = 'none';
+            appsMenu.style.display = 'none';
+            submenus.forEach(submenu => submenu.style.display = 'none');
+
+            document.getElementById('tb-main-btn').classList.remove('active');
+            document.getElementById('apps-btn').classList.remove('active');
+        }
+
+        // context menu stuff for desktop button
+        const tbMainBtn = document.getElementById('tb-main-btn');
+        const contextMenuLgn = document.querySelector('.context-menu-lgn');
+
+        function showContextLgn() {
+            hideAllMenus();
+            const rect = tbMainBtn.getBoundingClientRect();
+            contextMenuLgn.style.left = `${rect.left}px`;
+            contextMenuLgn.style.top = `${rect.bottom}px`;
+            contextMenuLgn.style.display = 'flex';
+            tbMainBtn.classList.add('active');
+        }
+
+        tbMainBtn.addEventListener('click', () => {
+            if (contextMenuLgn.style.display === 'flex') {
                 hideAllMenus();
-                const rect = appsBtn.getBoundingClientRect();
-                appsMenu.style.left = `${rect.left}px`;
-                appsMenu.style.bottom = `${window.innerHeight - rect.top + 2}px`;
-                appsMenu.style.display = 'flex';
-                appsBtn.classList.add('active');
+            } else {
+                showContextLgn();
+            }
+        });
+
+        const appsBtn = document.getElementById('apps-btn');
+        const appsMenu = document.getElementById('apps-menu');
+
+        function showAppsMenu() {
+            hideAllMenus();
+            const rect = appsBtn.getBoundingClientRect();
+            appsMenu.style.left = `${rect.left}px`;
+            appsMenu.style.bottom = `${window.innerHeight - rect.top + 2}px`;
+            appsMenu.style.display = 'flex';
+            appsBtn.classList.add('active');
+        }
+
+        appsBtn.addEventListener('click', () => {
+            if (appsMenu.style.display === 'flex') {
+                hideAllMenus();
+            } else {
+                showAppsMenu();
+            }
+        });
+
+        const submenuTriggers = document.querySelectorAll('[data-submenu]');
+        let activeSubmenu = null;
+        let submenuTimeout = null;
+
+        submenuTriggers.forEach(trigger => {
+            trigger.addEventListener('mouseenter', () => {
+                clearTimeout(submenuTimeout);
+                const submenuName = trigger.getAttribute('data-submenu');
+                const submenu = document.getElementById(submenuName + '-submenu');
+
+                document.querySelectorAll('.submenu').forEach(sub => {
+                    if (sub !== submenu) sub.style.display = 'none';
+                });
+
+                if (submenu) {
+                    const triggerRect = trigger.getBoundingClientRect();
+                    submenu.style.left = `${triggerRect.right - 2}px`;
+                    submenu.style.top = `${triggerRect.top}px`;
+                    submenu.style.display = 'flex';
+                    activeSubmenu = submenu;
+                }
+            });
+
+            trigger.addEventListener('mouseleave', () => {
+                submenuTimeout = setTimeout(() => {
+                    if (activeSubmenu && !activeSubmenu.matches(':hover')) {
+                        activeSubmenu.style.display = 'none';
+                        activeSubmenu = null;
+                    }
+                }, 200);
+            });
+        });
+
+        document.querySelectorAll('.submenu').forEach(submenu => {
+            submenu.addEventListener('mouseenter', () => {
+                clearTimeout(submenuTimeout);
+            });
+
+            submenu.addEventListener('mouseleave', () => {
+                submenuTimeout = setTimeout(() => {
+                    submenu.style.display = 'none';
+                    if (activeSubmenu === submenu) {
+                        activeSubmenu = null;
+                    }
+                }, 200);
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!contextMenuLgn.contains(e.target) && e.target !== tbMainBtn &&
+                !appsMenu.contains(e.target) && e.target !== appsBtn &&
+                !Array.from(document.querySelectorAll('.submenu')).some(submenu => submenu.contains(e.target))) {
+                hideAllMenus();
+            }
+        });
+
+        // Replace the existing launchApp function with this:
+        function launchApp(appName) {
+            // Create window element
+            const window = document.createElement('div');
+            window.className = 'window';
+            window.style.left = '50%';
+            window.style.top = '50%';
+            window.style.transform = 'translate(-50%, -50%)';
+            window.style.position = 'absolute';
+
+            window.innerHTML = `
+        <div class="titlebar" style="cursor: move;">
+            ${appName}
+            <div class="titlebar-lines"></div>
+            <button class="close-btn" onclick="this.closest('.window').remove()">
+                <span class="button-text">×</span>
+            </button>
+        </div>
+        <iframe class="iframe-container"></iframe>
+    `;
+
+            // Add drag functionality
+            const titlebar = window.querySelector('.titlebar');
+            let isDragging = false;
+            let dragOffset = {
+                x: 0,
+                y: 0
+            };
+
+            titlebar.addEventListener('mousedown', (e) => {
+                // Only drag if clicking on titlebar, not close button
+                if (e.target.closest('.close-btn')) return;
+
+                isDragging = true;
+                window.style.transform = 'none'; // Remove center transform
+                const rect = window.getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', stopDrag);
+                e.preventDefault();
+            });
+
+            function drag(e) {
+                if (isDragging) {
+                    window.style.left = (e.clientX - dragOffset.x) + 'px';
+                    window.style.top = (e.clientY - dragOffset.y) + 'px';
+                }
             }
 
-            appsBtn.addEventListener('click', () => {
-                if (appsMenu.style.display === 'flex') {
-                    hideAllMenus();
-                } else {
-                    showAppsMenu();
-                }
-            });
+            function stopDrag() {
+                isDragging = false;
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('mouseup', stopDrag);
+            }
 
-            const submenuTriggers = document.querySelectorAll('[data-submenu]');
-            let activeSubmenu = null;
-            let submenuTimeout = null;
-
-            submenuTriggers.forEach(trigger => {
-                trigger.addEventListener('mouseenter', () => {
-                    clearTimeout(submenuTimeout);
-                    const submenuName = trigger.getAttribute('data-submenu');
-                    const submenu = document.getElementById(submenuName + '-submenu');
-
-                    document.querySelectorAll('.submenu').forEach(sub => {
-                        if (sub !== submenu) sub.style.display = 'none';
-                    });
-
-                    if (submenu) {
-                        const triggerRect = trigger.getBoundingClientRect();
-                        submenu.style.left = `${triggerRect.right - 2}px`;
-                        submenu.style.top = `${triggerRect.top}px`;
-                        submenu.style.display = 'flex';
-                        activeSubmenu = submenu;
-                    }
-                });
-
-                trigger.addEventListener('mouseleave', () => {
-                    submenuTimeout = setTimeout(() => {
-                        if (activeSubmenu && !activeSubmenu.matches(':hover')) {
-                            activeSubmenu.style.display = 'none';
-                            activeSubmenu = null;
-                        }
-                    }, 200);
-                });
-            });
-
-            document.querySelectorAll('.submenu').forEach(submenu => {
-                submenu.addEventListener('mouseenter', () => {
-                    clearTimeout(submenuTimeout);
-                });
-
-                submenu.addEventListener('mouseleave', () => {
-                    submenuTimeout = setTimeout(() => {
-                        submenu.style.display = 'none';
-                        if (activeSubmenu === submenu) {
-                            activeSubmenu = null;
-                        }
-                    }, 200);
-                });
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!contextMenuLgn.contains(e.target) && e.target !== tbMainBtn &&
-                    !appsMenu.contains(e.target) && e.target !== appsBtn &&
-                    !Array.from(document.querySelectorAll('.submenu')).some(submenu => submenu.contains(e.target))) {
-                    hideAllMenus();
-                }
-            });
-        </script>
+            document.body.appendChild(window);
+            hideAllMenus();
+        } 
+    </script>
     </body>
 </html>
