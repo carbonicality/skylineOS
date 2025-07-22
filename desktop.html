@@ -292,7 +292,32 @@
                 color: white;
                 box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
                 overflow: hidden;
-                margin-top: 3px;
+            }
+
+            .context-menu-apps {
+                width: 150px;
+                display: none;
+                position: absolute;
+                flex-direction: column;
+                background-color: #2a2a2a;
+                border: 1.5px solid #464748;
+                color: white;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+                overflow: hidden;
+                z-index: 1000;
+            }
+
+            .submenu {
+                width: 150px;
+                display: none;
+                position: absolute;
+                flex-direction: column;
+                background-color: #2a2a2a;
+                border: 1.5px solid #464748;
+                color: white;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+                overflow: hidden;
+                z-index: 1001;
             }
 
             .menu-item {
@@ -300,16 +325,32 @@
                 background-color: transparent;
                 color: white;
                 border: 0;
+                font-size: 16px;
                 height: 25px;
                 display: flex;
                 align-items: center;
                 padding: 0;
                 width: 100%;
+                position: relative;
             }
 
             .menu-item:hover {
                 background-color: #7b7bac;
                 border: none;
+            }
+
+            .menu-item.with-arrow::after {
+                content: '▶';
+                position: absolute;
+                right: 5px;
+                font-size: 12px;
+            }
+
+            .menu-separator {
+                height: 1px;
+                background-color: #464748;
+                width: 100%;
+                margin: 2px 0;
             }
 
             .context-menu-thing {
@@ -324,21 +365,22 @@
             }
 
             .close-btn {
-                height: 20px;
-                width: 20px;
+                height: 21px;
+                width: 21px;
                 background-color: #464748;
                 border: 2.5px outset #464748;
-                font-size: 16px;
+                font-size: 20px;
                 margin-right: 5px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                font-family: 'terminus';
             }
 
             .button-text {
                 color: white;
                 text-shadow: none;
-                font-size: 16px;
+                font-size: 20.5px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -355,6 +397,47 @@
                 border: 0;
             }
 
+            .taskbar {
+                background-color: #323232;
+                border: 2px solid #363738;
+                width: 100%;
+                height: 30px;
+                bottom: 0;
+                position: fixed;
+                display: flex;
+                align-items: center;
+            }
+
+            .info-container {
+                height: 25px;
+                border: 2px inset #383939;
+                background-color: #323232;
+                display: flex;
+                position: absolute;
+                align-items: center;
+                margin-left: 86%;
+            }
+
+            .appBtn {
+                width: 100px;
+                height: 27px;
+                border: 2px outset #363738;
+                font-family: 'terminus';
+                margin-left: 3px;
+                background-color: #323232;
+                color: white;
+                font-size: 16px;
+                justify-content: flex-start;
+                display: flex;
+                align-items: center;
+                padding-left: 8px;
+            }
+
+            .appBtn.active {
+                border: 2px inset #363738;
+                background-color: #2d2d2d;
+            }
+
         </style>
     </head>
     <body>
@@ -362,11 +445,17 @@
             <button class="tb-button-sel" id="tb-main-btn">Desktop</button>
             <button class="tb-button">File</button>
             <div class="topbar-lines"></div>
-            <p class="time-display">admin</p>
-            <p> |&nbsp;</p>
-            <p class="time-display" id="time">00:00</p>
-            <p> |&nbsp;</p>
-            <p class="date-display" id="date">0/0/0</p>
+        </div>
+
+        <div class="taskbar">
+            <button class="appBtn" id="apps-btn">Apps</button>
+            <div class="info-container">
+                <p class="time-display">&nbsp;admin</p>
+                <p> |&nbsp;</p>
+                <p class="time-display" id="time">00:00</p>
+                <p> |&nbsp;</p>
+                <p class="date-display" id="date">0/0/0</p>
+            </div>
         </div>
 
         <div class="context-menu-lgn">
@@ -380,6 +469,76 @@
             </button>
         </div>
 
+        <div class="context-menu-apps" id="apps-menu">
+            <button class="menu-item" onclick="alert('placeholder FOR NOW')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">About SkylineOS</span>
+            </button>
+            <div class="menu-separator"></div>
+            <button class="menu-item with-arrow" data-submenu="development">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Development</span>
+            </button>
+            <button class="menu-item with-arrow" data-submenu="games">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Games</span>
+            </button>
+            <button class="menu-item with-arrow" data-submenu="utilities">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Utilities</span>
+            </button>
+            <div class="menu-separator"></div>
+            <button class="menu-item with-arrow" data-submenu="system">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">System</span>
+            </button>
+        </div>
+
+        <div class="submenu" id="development-submenu">
+            <button class="menu-item" onclick="launchApp('Code Editor')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Code Editor</span>
+            </button>
+            <button class="menu-item" onclick="launchApp('Terminal')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Terminal</span>
+            </button>
+        </div>
+
+        <div class="submenu" id="games-submenu">
+            <button class="menu-item" onclick="launchApp('Snake')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Snake</span>
+            </button>
+        </div>
+
+        <div class="submenu" id="utilities-submenu">
+            <button class="menu-item" onclick="launchApp('Text Editor')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Text Editor</span>
+            </button>
+            <button class="menu-item" onclick="launchApp('File Manager')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">File Manager</span>
+            </button>
+            <button class="menu-item" onclick="launchApp('Paint')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Paint</span>
+            </button>
+        </div>
+
+        <div class="submenu" id="system-submenu">
+            <button class="menu-item" onclick="launchApp('Settings')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Settings</span>
+            </button>
+            <div class="menu-separator"></div>
+            <button class="menu-item" onclick="alert('Logging out...')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Logout</span>
+            </button>
+        </div>
+
         <div class="window">
             <div class="titlebar">
                 title
@@ -387,8 +546,8 @@
                 <button class="close-btn"><span class="button-text">×</span></button>
             </div>
             <iframe class="iframe-container"></iframe>
-            </div>
         </div>
+
         <script>
             // time display logic
             function updateDT() {
@@ -412,33 +571,120 @@
                 window.location = 'shutdown.html';
             }
 
-            // context menu stuff
+            function launchApp(appName) {
+                alert(`Launching ${appName}... (placeholder btw)`); //change this to actual app loading logic
+                hideAllMenus();
+            }
+
+            function hideAllMenus() {
+                const contextMenuLgn = document.querySelector('.context-menu-lgn');
+                const appsMenu = document.getElementById('apps-menu');
+                const submenus = document.querySelectorAll('.submenu');
+                
+                contextMenuLgn.style.display = 'none';
+                appsMenu.style.display = 'none';
+                submenus.forEach(submenu => submenu.style.display = 'none');
+                
+                document.getElementById('tb-main-btn').classList.remove('active');
+                document.getElementById('apps-btn').classList.remove('active');
+            }
+
+            // context menu stuff for desktop button
             const tbMainBtn = document.getElementById('tb-main-btn');
             const contextMenuLgn = document.querySelector('.context-menu-lgn');
 
             function showContextLgn() {
+                hideAllMenus();
                 const rect = tbMainBtn.getBoundingClientRect();
                 contextMenuLgn.style.left = `${rect.left}px`;
                 contextMenuLgn.style.top = `${rect.bottom}px`;
                 contextMenuLgn.style.display = 'flex';
+                tbMainBtn.classList.add('active');
             }
 
             tbMainBtn.addEventListener('click', () => {
                 if (contextMenuLgn.style.display === 'flex') {
-                    contextMenuLgn.style.display = 'none';
-                    tbMainBtn.classList.remove('active');
+                    hideAllMenus();
                 } else {
                     showContextLgn();
-                    tbMainBtn.classList.add('active');
                 }
             });
 
-            document.addEventListener('click', (e) => {
-                if (!contextMenuLgn.contains(e.target) && e.target !== tbMainBtn) {
-                    contextMenuLgn.style.display = 'none';
-                    tbMainBtn.classList.remove('active');
+            const appsBtn = document.getElementById('apps-btn');
+            const appsMenu = document.getElementById('apps-menu');
+
+            function showAppsMenu() {
+                hideAllMenus();
+                const rect = appsBtn.getBoundingClientRect();
+                appsMenu.style.left = `${rect.left}px`;
+                appsMenu.style.bottom = `${window.innerHeight - rect.top + 2}px`;
+                appsMenu.style.display = 'flex';
+                appsBtn.classList.add('active');
+            }
+
+            appsBtn.addEventListener('click', () => {
+                if (appsMenu.style.display === 'flex') {
+                    hideAllMenus();
+                } else {
+                    showAppsMenu();
                 }
-            })
+            });
+
+            const submenuTriggers = document.querySelectorAll('[data-submenu]');
+            let activeSubmenu = null;
+            let submenuTimeout = null;
+
+            submenuTriggers.forEach(trigger => {
+                trigger.addEventListener('mouseenter', () => {
+                    clearTimeout(submenuTimeout);
+                    const submenuName = trigger.getAttribute('data-submenu');
+                    const submenu = document.getElementById(submenuName + '-submenu');
+
+                    document.querySelectorAll('.submenu').forEach(sub => {
+                        if (sub !== submenu) sub.style.display = 'none';
+                    });
+
+                    if (submenu) {
+                        const triggerRect = trigger.getBoundingClientRect();
+                        submenu.style.left = `${triggerRect.right - 2}px`;
+                        submenu.style.top = `${triggerRect.top}px`;
+                        submenu.style.display = 'flex';
+                        activeSubmenu = submenu;
+                    }
+                });
+
+                trigger.addEventListener('mouseleave', () => {
+                    submenuTimeout = setTimeout(() => {
+                        if (activeSubmenu && !activeSubmenu.matches(':hover')) {
+                            activeSubmenu.style.display = 'none';
+                            activeSubmenu = null;
+                        }
+                    }, 200);
+                });
+            });
+
+            document.querySelectorAll('.submenu').forEach(submenu => {
+                submenu.addEventListener('mouseenter', () => {
+                    clearTimeout(submenuTimeout);
+                });
+
+                submenu.addEventListener('mouseleave', () => {
+                    submenuTimeout = setTimeout(() => {
+                        submenu.style.display = 'none';
+                        if (activeSubmenu === submenu) {
+                            activeSubmenu = null;
+                        }
+                    }, 200);
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!contextMenuLgn.contains(e.target) && e.target !== tbMainBtn &&
+                    !appsMenu.contains(e.target) && e.target !== appsBtn &&
+                    !Array.from(document.querySelectorAll('.submenu')).some(submenu => submenu.contains(e.target))) {
+                    hideAllMenus();
+                }
+            });
         </script>
     </body>
 </html>
