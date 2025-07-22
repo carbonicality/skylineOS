@@ -105,29 +105,10 @@
                 flex-grow: 1;
                 height: 100%;
                 margin-left: 10px;
+                margin-right: 5px;
             }
 
-            .banner {
-                margin-top: 5px;
-                width: 99.8%
-            }
-
-            .form {
-                border: 3px inset #323334;
-                width: 580px;
-                flex-direction: column;
-                height: 120px;
-                margin: 10px auto;
-                display: flex;
-            }
-
-            .separator {
-                height: 7.5px;
-                width: 99.8%;
-                background-image: linear-gradient(to left, #9696b4, #424254);
-            }
-
-            .username-container {
+            .text-container {
                 width: 562.5px;
                 margin-left: 5px;
                 margin-right: 5px;
@@ -139,7 +120,7 @@
                 padding-left: 5px;
             }
 
-            .user-tb {
+            .text-tb {
                 width: 440px;
                 margin-left: 20px;
                 margin-right: 5px;
@@ -148,30 +129,6 @@
                 font-family: 'terminus';
                 background-color: white;
                 color: black;
-            }
-
-            .passwd-container {
-                width: 562.5px;
-                margin-left: 5px;
-                margin-right: 5px;
-                margin-top: 5px;
-                border: 1px solid #505253;
-                height: 30px;
-                align-items: center;
-                display: flex;
-                padding-left: 5px;
-            }
-
-            .passwd-tb {
-                width: 440px;
-                margin-left: 20px;
-                margin-right: 5px;
-                height: 20px;
-                font-family: 'terminus';
-                border: 2px inset #464748;
-                background-color: white;
-                color: black;
-
             }
 
             .dark-button {
@@ -366,13 +323,47 @@
                 padding-left: 5px;
             }
 
+            .close-btn {
+                height: 20px;
+                width: 20px;
+                background-color: #464748;
+                border: 2.5px outset #464748;
+                font-size: 16px;
+                margin-right: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .button-text {
+                color: white;
+                text-shadow: none;
+                font-size: 16px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .iframe-container {
+                width: 100%;
+                height: 100%;
+                margin-top: 2.5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: rgb(0, 0, 0);
+                border: 0;
+            }
+
         </style>
     </head>
     <body>
         <div class="topbar">
-            <button class="tb-button-sel" id="loginAppBtn">Login Manager</button>
-            <button class="tb-button" onclick="alert('Login Manager v1.0.0')">About</button>
+            <button class="tb-button-sel" id="tb-main-btn">Desktop</button>
+            <button class="tb-button">File</button>
             <div class="topbar-lines"></div>
+            <p class="time-display">admin</p>
+            <p> |&nbsp;</p>
             <p class="time-display" id="time">00:00</p>
             <p> |&nbsp;</p>
             <p class="date-display" id="date">0/0/0</p>
@@ -391,29 +382,11 @@
 
         <div class="window">
             <div class="titlebar">
-                Log in to SkylineOS
+                title
                 <div class="titlebar-lines"></div>
+                <button class="close-btn"><span class="button-text">×</span></button>
             </div>
-            <img src="./icons/skyline2.png" class="banner">
-            <div class="separator"></div>
-            <div class="form">
-                <div class="username-container">
-                    User name:
-                    <input class="user-tb" placeholder="hint: the username is admin" type="text">
-                </div>
-                <div class="passwd-container">
-                    Password:&nbsp;
-                    <input class="passwd-tb" placeholder="hint: the password is 123456" type="password">
-                </div>
-                <label class="c-checkbox">
-                    <input type="checkbox">
-                    <span class="checkbox-bx"></span>
-                    Automatically sign in from now on
-                </label>
-            </div>
-            <div class="button-row">
-                <button class="tonal-button" onclick="checkCreds()">Log in</button>
-                <button class="dark-button" onclick="reboot()">Reboot</button>
+            <iframe class="iframe-container"></iframe>
             </div>
         </div>
         <script>
@@ -432,33 +405,7 @@
             }
 
             updateDT();
-            setInterval(updateDT, 30000);
-
-            // authentication
-            function checkCreds() {
-                const userInput = document.querySelector('.user-tb').value;
-                const passInput = document.querySelector('.passwd-tb').value;
-                const autoLogin = document.querySelector('.c-checkbox input').checked;
-
-                if (userInput === 'admin' && passInput === '123456') {
-                    if (autoLogin) {
-                        localStorage.setItem('skylineOS_autologin', 'true');
-                    } else {
-                        localStorage.removeItem('skylineOS_autologin');
-                    }
-                    window.location = "desktop.html";
-                } else {
-                    alert('Invalid credentials! Please try again.');
-                }
-            }
-
-            window.addEventListener('DOMContentLoaded', () => {
-                    if (localStorage.getItem('skylineOS_autologin') === 'true') {
-                        document.querySelector('.user-tb').value = 'admin';
-                        document.querySelector('.passwd-tb').value = '123456';
-                        checkCreds();
-                    }
-            })
+            setInterval(updateDT, 30000)
 
             // universal reboot which js goes to shutdown and then bootloader
             function reboot() {
@@ -466,30 +413,30 @@
             }
 
             // context menu stuff
-            const loginAppBtn = document.getElementById('loginAppBtn');
+            const tbMainBtn = document.getElementById('tb-main-btn');
             const contextMenuLgn = document.querySelector('.context-menu-lgn');
 
             function showContextLgn() {
-                const rect = loginAppBtn.getBoundingClientRect();
+                const rect = tbMainBtn.getBoundingClientRect();
                 contextMenuLgn.style.left = `${rect.left}px`;
                 contextMenuLgn.style.top = `${rect.bottom}px`;
                 contextMenuLgn.style.display = 'flex';
             }
 
-            loginAppBtn.addEventListener('click', () => {
+            tbMainBtn.addEventListener('click', () => {
                 if (contextMenuLgn.style.display === 'flex') {
                     contextMenuLgn.style.display = 'none';
-                    loginAppBtn.classList.remove('active');
+                    tbMainBtn.classList.remove('active');
                 } else {
                     showContextLgn();
-                    loginAppBtn.classList.add('active');
+                    tbMainBtn.classList.add('active');
                 }
             });
 
             document.addEventListener('click', (e) => {
-                if (!contextMenuLgn.contains(e.target) && e.target !== loginAppBtn) {
+                if (!contextMenuLgn.contains(e.target) && e.target !== tbMainBtn) {
                     contextMenuLgn.style.display = 'none';
-                    loginAppBtn.classList.remove('active');
+                    tbMainBtn.classList.remove('active');
                 }
             })
         </script>
