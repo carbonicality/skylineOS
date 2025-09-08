@@ -377,6 +377,54 @@
                 font-family: 'terminus';
             }
 
+            .control-btn {
+                height: 21px;
+                width: 21px;
+                background-color: #464748;
+                border: 2.5px outset #464748;
+                font-size: 20px;
+                margin-right: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: 'terminus';
+            }
+
+            .control-btn:hover {
+                background-color: #555;
+            }
+
+            .window-controls {
+                display: flex;
+                gap: 2px;
+            }
+
+            .window.maximised {
+                width: calc(100vw - 10px) !important;
+                height: calc(100vh - 65px) !important;
+                top: 25px !important;
+                left: 0 !important;
+                transform: none !important;
+            }
+
+            .window.minimised {
+                display: none;
+            }
+
+            .resize-handle {
+                position: absolute;
+                background: transparent;
+            }
+
+            .resize-handle.nw { top: -5px; left: -5px; width: 10px; height: 10px; cursor: nw-resize; }
+            .resize-handle.ne { top: -5px; right: -5px; width: 10px; height: 10px; cursor: ne-resize; }
+            .resize-handle.sw { bottom: -5px; left: -5px; width: 10px; height: 10px; cursor: sw-resize; }
+            .resize-handle.se { bottom: -5px; right: -5px; width: 10px; height: 10px; cursor: se-resize; }
+            .resize-handle.n { top: -5px; left: 10px; right: 10px; height: 10px; cursor: n-resize; }
+            .resize-handle.e { right: -5px; top: 10px; bottom: 10px; width: 10px; cursor: e-resize; }
+            .resize-handle.s { bottom: -5px; left: 10px; right: 10px; height: 10px; cursor: s-resize; }
+            .resize-handle.w { left: -5px; top: 10px; bottom: 10px; width: 10px; cursor: w-resize; }
+
             .button-text {
                 color: white;
                 text-shadow: none;
@@ -416,7 +464,7 @@
                 display: flex;
                 position: absolute;
                 align-items: center;
-                margin-left: 86%;
+                right: 10px;
             }
 
             .appBtn {
@@ -438,6 +486,12 @@
             .appBtn.active {
                 border: 2px inset #363738;
                 background-color: #2d2d2d;
+            }
+
+            .taskbar-apps {
+                display: flex;
+                gap: 2px;
+                margin-left: 5px;
             }
 
         </style>
@@ -551,19 +605,40 @@
         </div>
 
         <script>
-            // time display logic
-            function updateDT() {
-                const now = new Date();
-
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                document.getElementById('time').textContent = `${hours}:${minutes}`;
-
-                const day = now.getDate();
-                const month = now.getMonth() + 1;
-                const year = now.getFullYear().toString().slice(-2);
-                document.getElementById('date').textContent = `${day}/${month}/${year}`;
+        // app configuration
+        const APP_CONFIGS = {
+            'Code Editor': {
+                url: './apps/code_editor',
+                width: 800,
+                height: 600
+            },
+            'Terminal': {
+                url: './apps/terminal',
+                width: 600,
+                height: 400
+            },
+            'Text Editor': {
+                url: './apps/text_editor',
+                width: 800,
+                height: 600
             }
+        };
+
+        let openWindows = new Map();
+        
+        // time display logic
+        function updateDT() {
+            const now = new Date();
+
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}`;
+
+            const day = now.getDate();
+            const month = now.getMonth() + 1;
+            const year = now.getFullYear().toString().slice(-2);
+            document.getElementById('date').textContent = `${day}/${month}/${year}`;
+        }
 
         updateDT();
         setInterval(updateDT, 30000)
@@ -573,6 +648,30 @@
             window.location = 'shutdown.html';
         }
 
+        function getHighestZIndex() {
+            const windows = document.querySelectorAll('.window');
+            let highest = 100;
+            windows.forEach(w => {
+                const z = parseInt(w.style.zIndex) || 100;
+                if (z > highest) highest = z;
+            });
+            return highest;
+        }
+
+        function addToTaskbar(windowId, appName) {
+            const taskbarApps = document.getElementById('taskbar-apps');
+            const button = document.createElement('button');
+            button.className = 'appBtn';
+            button.id = `taskbar-${windowId}`;
+            button.textContent = appName;
+            button.onclick = () => restoreWindow(windowId);
+            taskbarApps.appendChild(button);
+        }
+
+        function removeFromTaskbar(windowId) {
+            const button = document.getElementById(`taskbar-${windowId}`);
+            if (button) button.remove();
+        }
 
         function hideAllMenus() {
             const contextMenuLgn = document.querySelector('.context-menu-lgn');
@@ -684,44 +783,95 @@
             }
         });
 
-        // Replace the existing launchApp function with this:
-        function launchApp(appName) {
-            // Create window element
-            const window = document.createElement('div');
-            window.className = 'window';
-            window.style.left = '50%';
-            window.style.top = '50%';
-            window.style.transform = 'translate(-50%, -50%)';
-            window.style.position = 'absolute';
+                function focusWindow(windowId) {
+            openWindows.forEach((window, id) => {
+                const button = document.getElementById(`taskbar-${id}`);
+                if (button) {
+                    if (id === windowId && !window.minimised) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                }
+            });
+        }
 
-            window.innerHTML = `
-        <div class="titlebar" style="cursor: move;">
-            ${appName}
-            <div class="titlebar-lines"></div>
-            <button class="close-btn" onclick="this.closest('.window').remove()">
-                <span class="button-text">×</span>
-            </button>
-        </div>
-        <iframe class="iframe-container"></iframe>
-    `;
+        function minimiseWindow(windowId) {
+            const windowEl = document.getElementById(windowId);
+            const windowData = openWindows.get(windowId);
+            windowEl.classList.add('minimised');
+            windowData.minimised = true;
 
-            // Add drag functionality
-            const titlebar = window.querySelector('.titlebar');
+            const button = document.getElementById(`taskbar-${windowId}`);
+            if (button) {
+                button.classList.remove('active');
+            }
+        }
+
+        function restoreWindow(windowId) {
+            const windowEl = document.getElementById(windowId);
+            const windowData = openWindows.get(windowId);
+
+            if (windowData.minimised) {
+                windowEl.classList.remove('minimised');
+                windowData.minimised = false;
+                windowEl.style.zIndex = getHighestZIndex() + 1;
+                focusWindow(windowId);
+            } else {
+                windowEl.style.zIndex = getHighestZIndex() + 1;
+                focusWindow(windowId);
+            }
+        }
+
+        function closeWindow(windowId) {
+            const windowEl = document.getElementById(windowId);
+            windowEl.remove();
+            openWindows.delete(windowId);
+            removeFromTaskbar(windowId);
+        }
+        
+        function addToTaskbar(windowId, appName) {
+            const taskbarApps = document.getElementById('taskbar-apps');
+            const button = document.createElement('button');
+            button.className = 'appBtn active';
+            button.id = `taskbar-${windowId}`;
+            button.textContent = appName;
+            button.onclick = () => restoreWindow(windowId);
+            taskbarApps.appendChild(button);
+        }
+
+        function removeFromTaskbar(windowId) {
+            const button = document.getElementById(`taskbar-${windowId}`);
+            if (button) button.remove();
+        } 
+
+        document.addEventListener('mousedown', (e) => {
+            const window = e.target.closest('.window');
+            if (window) {
+                window.style.zIndex = getHighestZIndex() + 1;
+                focusWindow(windowId);
+            }
+        });
+
+        function makeWindowDraggable(windowEl) {
+            const titlebar = windowEl.querySelector('.titlebar');
             let isDragging = false;
-            let dragOffset = {
-                x: 0,
-                y: 0
-            };
+            let startX, startY, startLeft, startTop;
 
             titlebar.addEventListener('mousedown', (e) => {
-                // Only drag if clicking on titlebar, not close button
-                if (e.target.closest('.close-btn')) return;
+                if (e.target.closest('.window-controls') || e.target.closest('.control-btn')) return;
 
                 isDragging = true;
-                window.style.transform = 'none'; // Remove center transform
-                const rect = window.getBoundingClientRect();
-                dragOffset.x = e.clientX - rect.left;
-                dragOffset.y = e.clientY - rect.top;
+                startX = e.clientX;
+                startY = e.clientY;
+
+                const rect = windowEl.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+
+                windowEl.style.transform = 'none';
+                windowEl.style.zIndex = getHighestZIndex() + 1;
+                focusWindow(windowEl.id);
 
                 document.addEventListener('mousemove', drag);
                 document.addEventListener('mouseup', stopDrag);
@@ -729,10 +879,29 @@
             });
 
             function drag(e) {
-                if (isDragging) {
-                    window.style.left = (e.clientX - dragOffset.x) + 'px';
-                    window.style.top = (e.clientY - dragOffset.y) + 'px';
-                }
+                if (!isDragging) return;
+
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+
+                let newLeft = startLeft + deltaX;
+                let newTop = startTop + deltaY;
+
+                const windowWidth = windowEl.offsetWidth;
+                const windowHeight = windowEl.offsetHeight;
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const topbarHeight = 25;
+                const taskbarHeight = 30;
+                const titlebarHeight = 30;
+
+                newLeft = Math.max(-windowWidth / 2, newLeft);
+                newLeft = Math.min(viewportWidth - windowWidth / 2, newLeft);
+                newTop = Math.max(topbarHeight, newTop); // top bounds
+                newTop = Math.min(viewportHeight - taskbarHeight - titlebarHeight, newTop);
+
+                windowEl.style.left = newLeft + 'px';
+                windowEl.style.top = newTop + 'px';
             }
 
             function stopDrag() {
@@ -740,10 +909,137 @@
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('mouseup', stopDrag);
             }
+        }
 
-            document.body.appendChild(window);
+        function toggleMaximise(windowId) {
+            const windowEl = document.getElementById(windowId);
+            windowEl.classList.toggle('maximised');
+        }
+
+        function restoreWindow(windowId) {
+            const windowEl = document.getElementById(windowId);
+            windowEl.classList.remove('minimised');
+            windowEl.style.zIndex = getHighestZIndex() + 1;
+        }
+
+        function makeWindowResizable(windowEl) {
+            const handles = windowEl.querySelectorAll('.resize-handle');
+
+            handles.forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const direction = handle.classList[1];
+                    startResize(e, windowEl, direction);
+                });
+            });
+        }
+
+        function startResize(e, windowEl, direction) {
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const rect = windowEl.getBoundingClientRect();
+            const startWidth = rect.width;
+            const startHeight = rect.height;
+            const startLeft = rect.left;
+            const startTop = rect.top;
+
+            function resize(e) {
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+
+                let newWidth = startWidth;
+                let newHeight = startHeight;
+                let newLeft = startLeft;
+                let newTop = startTop;
+
+                if (direction.includes('e')) {
+                    newWidth = Math.max(300, startWidth + deltaX);
+                }
+
+                if (direction.includes('w')) {
+                    newWidth = Math.max(300, startWidth - deltaX);
+                    if (newWidth > 300) {
+                        newLeft = startLeft + deltaX;
+                    }
+                }
+
+                if (direction.includes('s')) {
+                    newHeight = Math.max(200, startHeight + deltaY);
+                }
+
+                if (direction.includes('n')) {
+                    newHeight = Math.max(200, startHeight - deltaY);
+                    if (newHeight > 200) {
+                        newTop = startTop + deltaY;
+                    }
+                }
+
+                windowEl.style.width = newWidth + 'px';
+                windowEl.style.height = newHeight + 'px';
+                windowEl.style.left = newLeft + 'px';
+                windowEl.style.top = newTop + 'px';
+            }
+
+            function stopResize() {
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+                document.body.style.cursor = 'default';
+            }
+
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+            document.body.style.cursor = getComputedStyle(e.target).cursor;
+        }
+
+        function launchApp(appName) {
+            const config = APP_CONFIGS[appName] || { url: 'about:blank', width: 600, height: 400 };
+            const windowId = `window-${Date.now()}`;
+
+            const windowEl = document.createElement('div');
+            windowEl.className = 'window';
+            windowEl.id = windowId;
+            windowEl.style.width = config.width + 'px';
+            windowEl.style.height = config.height + 'px';
+            // note to self: change the maximise btn's text to a better icon
+            windowEl.innerHTML = `
+                <div class="titlebar">
+                    ${appName}
+                    <div class="titlebar-lines"></div>
+                    <div class="window-controls">
+                        <button class="control-btn minimise-btn" onclick="minimiseWindow('${windowId}')">-</button>
+                        <button class="control-btn maximise-btn" onclick="toggleMaximise('${windowId}')">□</button>
+                        <button class="control-btn close-btn" onclick="closeWindow('${windowId}')">x</button>
+                    </div>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="${config.url}"><iframe>
+                </div>
+
+                <div class="resize-handle nw"></div>
+                <div class="resize-handle ne"></div>
+                <div class="resize-handle sw"></div>
+                <div class="resize-handle se"></div>
+                <div class="resize-handle n"></div>
+                <div class="resize-handle e"></div>
+                <div class="resize-handle s"></div>
+                <div class="resize-handle w"></div>
+            `;
+
+            document.body.appendChild(windowEl);
+            makeWindowDraggable(windowEl);
+            makeWindowResizable(windowEl);
+
+            openWindows.set(windowId, {
+                name: appName,
+                element: windowEl,
+                minimised: false
+            });
+
+            focusWindow(windowId, appName);
+            addToTaskbar(windowId, appName);
             hideAllMenus();
-        } 
+        }
     </script>
     </body>
 </html>
