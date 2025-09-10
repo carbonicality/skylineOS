@@ -383,6 +383,7 @@
                 background-color: #464748;
                 border: 2.5px outset #464748;
                 font-size: 20px;
+                color: white;
                 margin-right: 5px;
                 display: flex;
                 justify-content: center;
@@ -445,6 +446,13 @@
                 border: 0;
             }
 
+            .iframe-container iframe {
+                width: 100%;
+                height: 100%;
+                border: none;
+                display: block;
+            }
+
             .taskbar {
                 background-color: #323232;
                 border: 2px solid #363738;
@@ -471,7 +479,7 @@
                 width: 100px;
                 height: 27px;
                 border: 2px outset #363738;
-                font-family: 'terminus';
+                font-family: 'spleen-bold';
                 margin-left: 3px;
                 background-color: #323232;
                 color: white;
@@ -494,6 +502,32 @@
                 margin-left: 5px;
             }
 
+            .tbBtn {
+                width: 150px;
+                height: 27px;
+                border: 2px outset #363738;
+                font-family: 'terminus';
+                margin-left: 3px;
+                background-color: #323232;
+                color: white;
+                font-size: 16px;
+                z-index: 2001;
+                justify-content: flex-start;
+                display: flex;
+                align-items: center;
+                padding-left: 8px;
+            }
+
+            .tbBtn.active {
+                border: 2px inset #363738;
+                background-color: #2d2d2d;
+                font-family: 'spleen-bold';
+            }
+
+            .window.inactive .titlebar {
+                background-image: linear-gradient(to right, #5a5a5a, #7a7a7a);
+            }
+
         </style>
     </head>
     <body>
@@ -505,6 +539,7 @@
 
         <div class="taskbar">
             <button class="appBtn" id="apps-btn">Apps</button>
+            <div class="taskbar-apps" id="taskbar-apps"></div>
             <div class="info-container">
                 <p class="time-display">&nbsp;admin</p>
                 <p> |&nbsp;</p>
@@ -608,19 +643,41 @@
         // app configuration
         const APP_CONFIGS = {
             'Code Editor': {
-                url: './apps/code_editor',
+                url: './apps/code_editor.html',
                 width: 800,
-                height: 600
+                height: 600,
+                topbarName: 'Code Editor',
+                topbarButtons: [
+                    {
+                        name: 'File',
+                        items: [
+                            { name: 'New File', action: () => alert('New file logic') },
+                            { name: 'Open File', action: () => alert('open file logic') }
+                        ]
+                    },
+                    {
+                        name: 'Edit',
+                        items: [
+                            { name: 'Undo', action: () => alert('undo logic') },
+                            { name: 'Redo', action: () => alert('redo logic') },
+                        ]
+                    }
+                ]
             },
             'Terminal': {
-                url: './apps/terminal',
-                width: 600,
-                height: 400
-            },
-            'Text Editor': {
-                url: './apps/text_editor',
+                url: './apps/terminal.html',
                 width: 800,
-                height: 600
+                height: 600,
+                topbarName: 'Terminal',
+                topbarButtons: [
+                    {
+                        name: 'Session',
+                        items: [
+                            { name: 'New File', action: () => alert('New file logic') },
+                            { name: 'Open File', action: () => alert('open file logic') }
+                        ]
+                    },
+                ]
             }
         };
 
@@ -656,21 +713,6 @@
                 if (z > highest) highest = z;
             });
             return highest;
-        }
-
-        function addToTaskbar(windowId, appName) {
-            const taskbarApps = document.getElementById('taskbar-apps');
-            const button = document.createElement('button');
-            button.className = 'appBtn';
-            button.id = `taskbar-${windowId}`;
-            button.textContent = appName;
-            button.onclick = () => restoreWindow(windowId);
-            taskbarApps.appendChild(button);
-        }
-
-        function removeFromTaskbar(windowId) {
-            const button = document.getElementById(`taskbar-${windowId}`);
-            if (button) button.remove();
         }
 
         function hideAllMenus() {
@@ -717,6 +759,87 @@
             appsMenu.style.bottom = `${window.innerHeight - rect.top + 2}px`;
             appsMenu.style.display = 'flex';
             appsBtn.classList.add('active');
+        }
+
+        function hideTbMenus() {
+            const menu = document.getElementById('tb-menu');
+            if (menu) {
+                menu.remove();
+            }
+        }
+
+        function resetTb() {
+            const tb = document.querySelector('.topbar');
+
+            const mainBtn = document.getElementById('tb-main-btn');
+            mainBtn.textContent = 'Desktop';
+
+            const btns = tb.querySelectorAll('.tb-button');
+            btns.forEach(btn => btn.remove());
+
+            const secBtn = document.createElement('button');
+            secBtn.className = 'tb-button';
+            secBtn.textContent = 'File';
+
+            const lines = tb.querySelector('.topbar-lines');
+            tb.insertBefore(secBtn, lines);
+        }
+
+        function showTbMenu(btn, items) {
+            hideTbMenus();
+
+            const menu = document.createElement('div');
+            menu.className = 'context-menu-apps';
+            menu.id = 'tb-menu';
+
+            items.forEach(item => {
+                const menuItem = document.createElement('button');
+                menuItem.className = 'menu-item';
+                menuItem.innerHTML = `
+                    <div class="context-menu-thing"></div>
+                    <span class="m-text">${item.name}</span>
+                `;
+                menuItem.onclick = () => {
+                    item.action();
+                    hideTbMenus();
+                };
+                menu.appendChild(menuItem);
+
+                const rect = btn.getBoundingClientRect();
+                menu.style.left = `${rect.left}px`;
+                menu.style.top = `${rect.bottom}px`;
+                menu.style.display = `flex`;
+
+                document.body.appendChild(menu);
+            })
+        }
+
+        function updateTb(config) {
+            const tb = document.querySelector('.topbar');
+
+            const mainBtn = document.getElementById('tb-main-btn');
+            if (config.topbarName) {
+                mainBtn.textContent = config.topbarName;
+            }
+
+            const btns = tb.querySelectorAll('.tb-button');
+            btns.forEach(btn => btn.remove());
+
+            if (config.topbarButtons) {
+                config.topbarButtons.forEach(btnConfig => {
+                    const btn = document.createElement('button');
+                    btn.className = 'tb-button';
+                    btn.textContent = btnConfig.name;
+                    btn.setAttribute('data-menu', btnConfig.name.toLowerCase());
+
+                    const lines = tb.querySelector('.topbar-lines');
+                    tb.insertBefore(btn, lines);
+
+                    btn.addEventListener('click', (e) => {
+                        showTbMenu(e.target, btnConfig.items);
+                    })
+                })
+            }
         }
 
         appsBtn.addEventListener('click', () => {
@@ -776,14 +899,42 @@
         });
 
         document.addEventListener('click', (e) => {
+            // check if click is on 'desktop'
+            if (e.target === document.body) {
+                const activeWindow = document.querySelector('.window-active');
+                if (!activeWindow) {
+                    resetTb();
+                }
+            } 
+
             if (!contextMenuLgn.contains(e.target) && e.target !== tbMainBtn &&
                 !appsMenu.contains(e.target) && e.target !== appsBtn &&
-                !Array.from(document.querySelectorAll('.submenu')).some(submenu => submenu.contains(e.target))) {
-                hideAllMenus();
-            }
-        });
+                !Array.from(document.querySelectorAll('.submenu')).some(submenu => submenu.contains(e.target)) &&
+                !e.target.classList.contains('tb-button') && 
+                !document.getElementById('tb-menu')?.contains(e.target)) {
+                    hideAllMenus();
+                    hideTbMenus();
+                }
+            });
 
-                function focusWindow(windowId) {
+        function focusWindow(windowId) {
+            // creates all inactive at first
+            document.querySelectorAll('.window').forEach(win => {
+                win.classList.remove('active');
+                win.classList.add('inactive');
+            })
+
+            const focusedWindow = document.getElementById(windowId);
+            if (focusedWindow) {
+                focusedWindow.classList.remove('inactive');
+                focusedWindow.classList.add('active');
+
+                const windowData = openWindows.get(windowId);
+                if (windowData && windowData.config) {
+                    updateTb(windowData.config);
+                }
+            }
+
             openWindows.forEach((window, id) => {
                 const button = document.getElementById(`taskbar-${id}`);
                 if (button) {
@@ -800,6 +951,7 @@
             const windowEl = document.getElementById(windowId);
             const windowData = openWindows.get(windowId);
             windowEl.classList.add('minimised');
+            windowEl.classList.add('inactive');
             windowData.minimised = true;
 
             const button = document.getElementById(`taskbar-${windowId}`);
@@ -812,14 +964,16 @@
             const windowEl = document.getElementById(windowId);
             const windowData = openWindows.get(windowId);
 
-            if (windowData.minimised) {
-                windowEl.classList.remove('minimised');
-                windowData.minimised = false;
-                windowEl.style.zIndex = getHighestZIndex() + 1;
-                focusWindow(windowId);
-            } else {
-                windowEl.style.zIndex = getHighestZIndex() + 1;
-                focusWindow(windowId);
+            if (windowEl && windowData) {
+                if (windowData.minimised) {
+                    windowEl.classList.remove('minimised');
+                    windowData.minimised = false;
+                    windowEl.style.zIndex = getHighestZIndex() + 1;
+                    focusWindow(windowId);
+                } else {
+                    windowEl.style.zIndex = getHighestZIndex() + 1;
+                    focusWindow(windowId)
+                }
             }
         }
 
@@ -828,12 +982,21 @@
             windowEl.remove();
             openWindows.delete(windowId);
             removeFromTaskbar(windowId);
+
+            if (openWindows.size === 0) {
+                resetTb();
+            } else {
+                const remainingWindows = Array.from(openWindows.keys());
+                if (remainingWindows.length > 0) {
+                    focusWindow(remainingWindows[0]);
+                }
+            }
         }
         
         function addToTaskbar(windowId, appName) {
             const taskbarApps = document.getElementById('taskbar-apps');
             const button = document.createElement('button');
-            button.className = 'appBtn active';
+            button.className = 'tbBtn active';
             button.id = `taskbar-${windowId}`;
             button.textContent = appName;
             button.onclick = () => restoreWindow(windowId);
@@ -849,7 +1012,7 @@
             const window = e.target.closest('.window');
             if (window) {
                 window.style.zIndex = getHighestZIndex() + 1;
-                focusWindow(windowId);
+                focusWindow(window.id);
             }
         });
 
@@ -914,12 +1077,6 @@
         function toggleMaximise(windowId) {
             const windowEl = document.getElementById(windowId);
             windowEl.classList.toggle('maximised');
-        }
-
-        function restoreWindow(windowId) {
-            const windowEl = document.getElementById(windowId);
-            windowEl.classList.remove('minimised');
-            windowEl.style.zIndex = getHighestZIndex() + 1;
         }
 
         function makeWindowResizable(windowEl) {
@@ -1001,7 +1158,8 @@
             windowEl.id = windowId;
             windowEl.style.width = config.width + 'px';
             windowEl.style.height = config.height + 'px';
-            // note to self: change the maximise btn's text to a better icon
+            windowEl.style.zIndex = getHighestZIndex() + 1;
+            // note to self: eventually change these to icon buttons instead of using unicode symbols
             windowEl.innerHTML = `
                 <div class="titlebar">
                     ${appName}
@@ -1009,11 +1167,11 @@
                     <div class="window-controls">
                         <button class="control-btn minimise-btn" onclick="minimiseWindow('${windowId}')">-</button>
                         <button class="control-btn maximise-btn" onclick="toggleMaximise('${windowId}')">□</button>
-                        <button class="control-btn close-btn" onclick="closeWindow('${windowId}')">x</button>
+                        <button class="control-btn close-btn" onclick="closeWindow('${windowId}')">×</button>
                     </div>
                 </div>
                 <div class="iframe-container">
-                    <iframe src="${config.url}"><iframe>
+                    <iframe src="${config.url}"></iframe>
                 </div>
 
                 <div class="resize-handle nw"></div>
@@ -1033,10 +1191,13 @@
             openWindows.set(windowId, {
                 name: appName,
                 element: windowEl,
-                minimised: false
+                minimised: false,
+                config: config
             });
 
-            focusWindow(windowId, appName);
+            windowEl.className = 'window active';
+            focusWindow(windowId);
+            updateTb(config);
             addToTaskbar(windowId, appName);
             hideAllMenus();
         }
