@@ -355,7 +355,10 @@
             let startX, startY, startLeft, startTop;
 
             titlebar.addEventListener('mousedown', (e) => {
-                if (e.target.closest('.window-controls') || e.target.closest('.control-btn')) return;
+                if (e.target.closest('.window-controls') || e.target.closest('.control-btn')) {
+                    e.stopPropagation;
+                    return;
+                }
 
                 isDragging = true;
                 startX = e.clientX;
@@ -413,71 +416,67 @@
         }
 
         function makeWindowResizable(windowEl) {
-            const handles = windowEl.querySelectorAll('.resize-handle');
             const MIN_WIDTH = 300;
             const MIN_HEIGHT = 200;
-
-            let isResizing = false;
-            let currentHandle = null;
-            let startX, startY, startWidth, startHeight, startLeft, startTop;
-
+    
+            const handles = windowEl.querySelectorAll('.resize-handle');
+    
             handles.forEach(handle => {
-                handle.addEventListener('mousedown', (e) => {
+                handle.onmousedown = function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-
-                    isResizing = true;
-                    currentHandle = handle;
-
+            
+                    const direction = Array.from(this.classList).find(cls => cls !== 'resize-handle');
+                    const startX = e.clientX;
+                    const startY = e.clientY;
                     const rect = windowEl.getBoundingClientRect();
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    startWidth = rect.width;
-                    startHeight = rect.height;
-                    startLeft = rect.left;
-                    startTop = rect.top;
-
-                    document.body.style.cursor = getComputedStyle(handle).cursor;
-                });
+            
+                    const cursors = {
+                        'n': 'n-resize',
+                        's': 's-resize', 
+                        'e': 'e-resize', 
+                        'w': 'w-resize',
+                        'ne': 'ne-resize', 
+                        'nw': 'nw-resize', 
+                        'se': 'se-resize', 
+                        'sw': 'sw-resize'
+                    };
+                    document.body.style.cursor = cursors[direction];
+            
+                    document.onmousemove = function(moveEvent) {
+                        const dx = moveEvent.clientX - startX;
+                        const dy = moveEvent.clientY - startY;
+                
+                        let width = rect.width;
+                        let height = rect.height;
+                        let left = rect.left;
+                        let top = rect.top;
+                
+                        if (direction.includes('e')) width = Math.max(MIN_WIDTH, rect.width + dx);
+                        if (direction.includes('w')) {
+                            width = Math.max(MIN_WIDTH, rect.width - dx);
+                            left = rect.left + (rect.width - width);
+                        }
+                        if (direction.includes('s')) height = Math.max(MIN_HEIGHT, rect.height + dy);
+                        if (direction.includes('n')) {
+                            height = Math.max(MIN_HEIGHT, rect.height - dy);
+                            top = rect.top + (rect.height - height);
+                        }
+                
+                        windowEl.style.width = width + 'px';
+                        windowEl.style.height = height + 'px';
+                        windowEl.style.left = left + 'px';
+                        windowEl.style.top = top + 'px';
+                    };
+            
+                    document.onmouseup = function() {
+                        document.onmousemove = null;
+                        document.onmouseup = null;
+                        document.body.style.cursor = '';
+                    };
+                };
             });
-
-            document.addEventListener('mousemove', (e) => {
-                if (!isResizing || !currentHandle) return;
-
-                const direction = currentHandle.classList[1];
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
-
-                let newWidth = startWidth;
-                let newHeight = startHeight;
-                let newLeft = startLeft;
-                let newTop = startTop;
-
-                if (direction.includes('e')) newWidth = Math.max(MIN_WIDTH, startWidth + dx);
-                if (direction.includes('w')) {
-                    newWidth = Math.max(MIN_WIDTH, startWidth - dx);
-                    newLeft = startLeft + (startWidth - newWidth);
-                }
-                if (direction.includes('s')) newHeight = Math.max(MIN_HEIGHT, startHeight + dy);
-                if (direction.includes('n')) {
-                    newHeight = Math.max(MIN_HEIGHT, startHeight - dy);
-                    newTop = startTop + (startHeight - newHeight);
-                }
-
-                windowEl.style.width = newWidth + 'px';
-                windowEl.style.height = newHeight + 'px';
-                windowEl.style.left = newLeft + 'px';
-                windowEl.style.top = newTop + 'px';
-            });
-
-            document.addEventListener('mouseup', () => {
-                if (isResizing) {
-                    isResizing = false;
-                    currentHandle = null;
-                    document.body.style.cursor = '';
-                }
-            });
-                }
+        }
 
 
         function startResize(e, windowEl, direction) {
@@ -568,8 +567,8 @@
                 <div class="resize-handle sw"></div>
                 <div class="resize-handle se"></div>
                 <div class="resize-handle n"></div>
-                <div class="resize-handle e"></div>
                 <div class="resize-handle s"></div>
+                <div class="resize-handle e"></div>
                 <div class="resize-handle w"></div>
             `;
 
