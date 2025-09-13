@@ -1,54 +1,16 @@
         // app configuration
         const APP_CONFIGS = {
-            'Text Editor': {
-                url: './apps/text_editor.html',
-                width: 600,
-                height: 400,
-                topbarName: 'Text Editor',
-                topbarButtons: [
-                    {
-                        name: 'File',
-                        items: [
-                            { name: 'New File', action: () => alert('New file logic') },
-                            { name: 'Open File', action: () => alert('open file logic') }
-                        ]
-                    },
-                    {
-                        name: 'Edit',
-                        items: [
-                            { name: 'Undo', action: () => alert('undo logic') },
-                            { name: 'Redo', action: () => alert('redo logic') },
-                        ]
-                    }
-                ]
+            'File Manager': {
+                url: './apps/filemanager.html',
+                width: 800,
+                height: 600,
+                topbarName: 'File Manager'
             },
             'Terminal': {
                 url: './apps/terminal.html',
                 width: 800,
                 height: 600,
                 topbarName: 'Terminal'
-            },
-            'File Manager': {
-                url: './apps/filemanager.html',
-                width: 800,
-                height: 500,
-                topbarName: 'File Manager',
-                topbarButtons: [
-                    {
-                        name: 'File',
-                        items: [
-                            { name: 'New File', actions: () => alert('newfile') },
-                            { name: 'Open File', actions: () => alert('openfile') },
-                            { name: 'New Folder', actions: () => alert('newfolder') },
-                        ]
-                    },
-                    {
-                        name: 'Open',
-                        items: [
-                            { name: 'Open from Computer', actions: () => alert('openfromcomputer') },
-                        ]
-                    }
-                ]
             }
         };
 
@@ -452,29 +414,91 @@
 
         function makeWindowResizable(windowEl) {
             const handles = windowEl.querySelectorAll('.resize-handle');
+            const MIN_WIDTH = 300;
+            const MIN_HEIGHT = 200;
+
+            let isResizing = false;
+            let currentHandle = null;
+            let startX, startY, startWidth, startHeight, startLeft, startTop;
 
             handles.forEach(handle => {
                 handle.addEventListener('mousedown', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    const direction = handle.classList[1];
-                    startResize(e, windowEl, direction);
+
+                    isResizing = true;
+                    currentHandle = handle;
+
+                    const rect = windowEl.getBoundingClientRect();
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startWidth = rect.width;
+                    startHeight = rect.height;
+                    startLeft = rect.left;
+                    startTop = rect.top;
+
+                    document.body.style.cursor = getComputedStyle(handle).cursor;
                 });
             });
-        }
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing || !currentHandle) return;
+
+                const direction = currentHandle.classList[1];
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+
+                let newWidth = startWidth;
+                let newHeight = startHeight;
+                let newLeft = startLeft;
+                let newTop = startTop;
+
+                if (direction.includes('e')) newWidth = Math.max(MIN_WIDTH, startWidth + dx);
+                if (direction.includes('w')) {
+                    newWidth = Math.max(MIN_WIDTH, startWidth - dx);
+                    newLeft = startLeft + (startWidth - newWidth);
+                }
+                if (direction.includes('s')) newHeight = Math.max(MIN_HEIGHT, startHeight + dy);
+                if (direction.includes('n')) {
+                    newHeight = Math.max(MIN_HEIGHT, startHeight - dy);
+                    newTop = startTop + (startHeight - newHeight);
+                }
+
+                windowEl.style.width = newWidth + 'px';
+                windowEl.style.height = newHeight + 'px';
+                windowEl.style.left = newLeft + 'px';
+                windowEl.style.top = newTop + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    currentHandle = null;
+                    document.body.style.cursor = '';
+                }
+            });
+                }
+
 
         function startResize(e, windowEl, direction) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const MIN_WIDTH = 100;
+            const MIN_HEIGHT = 50;
+
             const startX = e.clientX;
             const startY = e.clientY;
+
             const rect = windowEl.getBoundingClientRect();
             const startWidth = rect.width;
             const startHeight = rect.height;
             const startLeft = rect.left;
             const startTop = rect.top;
 
-            function resize(e) {
-                const deltaX = e.clientX - startX;
-                const deltaY = e.clientY - startY;
+            function onMouseMove(ev) {
+                const dx = ev.clientX - startX;
+                const dy = ev.clientY - startY;
 
                 let newWidth = startWidth;
                 let newHeight = startHeight;
@@ -482,25 +506,18 @@
                 let newTop = startTop;
 
                 if (direction.includes('e')) {
-                    newWidth = Math.max(300, startWidth + deltaX);
+                    newWidth = Math.max(MIN_WIDTH, startWidth + dx);
                 }
-
                 if (direction.includes('w')) {
-                    newWidth = Math.max(300, startWidth - deltaX);
-                    if (newWidth > 300) {
-                        newLeft = startLeft + deltaX;
-                    }
+                    newWidth = Math.max(MIN_WIDTH, startWidth - dx);
+                    newLeft = startLeft + (startWidth - newWidth);
                 }
-
                 if (direction.includes('s')) {
-                    newHeight = Math.max(200, startHeight + deltaY);
+                    newHeight = Math.max(MIN_HEIGHT, startHeight + dy);
                 }
-
                 if (direction.includes('n')) {
-                    newHeight = Math.max(200, startHeight - deltaY);
-                    if (newHeight > 200) {
-                        newTop = startTop + deltaY;
-                    }
+                    newHeight = Math.max(MIN_HEIGHT, startHeight - dy);
+                    newTop = startTop + (startHeight - newHeight);
                 }
 
                 windowEl.style.width = newWidth + 'px';
@@ -509,14 +526,15 @@
                 windowEl.style.top = newTop + 'px';
             }
 
-            function stopResize() {
-                document.removeEventListener('mousemove', resize);
-                document.removeEventListener('mouseup', stopResize);
-                document.body.style.cursor = 'default';
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                document.body.style.cursor = '';
             }
 
-            document.addEventListener('mousemove', resize);
-            document.addEventListener('mouseup', stopResize);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+
             document.body.style.cursor = getComputedStyle(e.target).cursor;
         }
 
@@ -572,8 +590,3 @@
             addToTaskbar(windowId, appName);
             hideAllMenus();
         }
-
-        // its indented because i took it from my old script tag lol
-        // begin some /apps/terminal.html scripts!
-
-        
