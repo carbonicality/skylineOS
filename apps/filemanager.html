@@ -171,9 +171,9 @@
                 display: flex;
                 align-items: center;
                 padding: 5px;
+                font-size: 16px;
                 margin: 2px 0;
                 cursor: pointer;
-                border-radius: 3px;
             }
 
             .dir-item:hover, .file-item:hover {
@@ -187,7 +187,7 @@
             .dir-icon, .file-icon {
                 margin-right: 8px;
                 font-family: 'unifont';
-                font-size: 14px;
+                font-size: 12px;
             }
 
             .file-info {
@@ -230,31 +230,32 @@
     <body>
         <div class="header-sec">
             <div class="selector-bar">
-                <button class="selector-btn" onclick="fileManager.showFileMenu()">File</button>
-                <button class="selector-btn" onclick="fileManager.openFile()">Open</button>
-                <button class="selector-btn" onclick="fileManager.createFile()">New</button>
+                <button class="selector-btn" onclick="FileManager.showFileMenu()">File</button>
+                <button class="selector-btn" onclick="FileManager.openFile()">Open</button>
+                <button class="selector-btn" onclick="FileManager.createNew()">New</button>
                 <div class="divider"></div>
-                <button class="selector-btn" onclick="fileManager.renameSelected()">Rename</button>
+                <button class="selector-btn" onclick="FileManager.renameSelected()">Rename</button>
             </div>
         </div>
         <div class="opt-bar">
-            <button class="nav-button" onclick="fileManager.navBack()"><</button>
-            <button class="nav-button" onclick="fileManager.navUp()">></button>
+            <button class="nav-button" onclick="FileManager.navBack()"><</button>
+            <button class="nav-button" onclick="FileManager.navUp()">></button>
             <p style="font-family: 'unifont'; margin-left: 10px; font-size: 15px;">Location:</p>
-            <input class="search-tb" onkeypress="if(event.key === 'Enter') fileManager.navigateToPath(this.value)"></input>
+            <input class="search-tb" id="location-input" onkeypress="if(event.key === 'Enter') FileManager.navigateToPath(this.value)"></input>
         </div>
-
+        <div class="breadcrumb" id="breadcrumb"></div>
         <div class="main-content">
-            <div class="nav-dirs">
+            <div class="nav-dirs" id="nav-dirs">
 
             </div>
-            <div class="nav-files">
+            <div class="nav-files" id="nav-files">
 
             </div>
         </div>
     </body>
+    <script src="../js/filesystem.js"></script>
     <script>
-        class fileManagerUI {
+        class FileManagerUI {
             constructor() {
                 this.filesystem = new SkylineFilesystem();
                 this.selectedItem = null;
@@ -295,20 +296,32 @@
                 const breadcrumbs = this.filesystem.getPathBreadcrumbs();
                 const breadcrumbsEl = document.getElementById('breadcrumb');
 
-                breadcrumbEl.innerHTML = breadcrumbs.map((crumbs, index) => {
+                breadcrumbsEl.innerHTML = breadcrumbs.map((crumb, index) => {
                     if (index === breadcrumbs.length - 1) {
                         return crumb.name;
                     } else {
-                        return `<a href="#" onclick="fileManager.navigateTo('${crumb.path}')">${crumb.name}</a>`;
+                        return `<a href="#" onclick="FileManager.navigateTo('${crumb.path}')">${crumb.name}</a>`;
                     }
                 }).join(' / ');
             }
 
             populateDirectories() {
-                const { directories } = this.filesystem.getCurrentDirectoryContents();
+                const { directories } = this.filesystem.getCurrentDirContents();
                 const dirsContainer = document.getElementById('nav-dirs');
 
-                dirsContainer = document.getElementById('nav-dirs');
+                dirsContainer.innerHTML = '';
+
+                // this fixes directories not showing when going to a directory:
+                if (this.filesystem.getCurrentPath() !== '/') {
+                    const parentEl = document.createElement('div');
+                    parentEl.className = 'dir-item';
+                    parentEl.innerHTML = `
+                        <span class="dir-icon">📁</span>
+                        <span>.. (parent directory)</span>
+                    `;
+                    parentEl.ondblclick = () => this.filesystem.navUp();
+                    dirsContainer.appendChild(parentEl);
+                }
 
                 directories.forEach(dir => {
                     const dirEl = document.createElement('div');
@@ -322,21 +335,30 @@
                         <span>${dir.name}</span>
                         ${dir.description ? `<div style="font-size: 12px; color: #888; margin-top: 2px;">${dir.description}</div>` : ''}
                         `;
+
+                        let clickTimeout;
                         
-                        dirEl.onClick = () => {
-                            this.selectItem(dirEl, 'directory', dir.name);
+                        dirEl.onclick = () => {
+                            clearTimeout(clickTimeout);
+                            clickTimeout = setTimeout(() => {
+                                this.selectItem(dirEl, 'directory', dir.name);
+                            }, 250);
                         };
 
                         dirEl.ondblclick = () => {
-                            this.navigateTo(this.filesystem.joinPaths(this.filesystem.getCurrentPath(), dir.name));
+                            clearTimeout(clickTimeout);
+                            const newPath = this.navigateTo(this.filesystem.joinPaths(this.filesystem.getCurrentPath(), dir.name));
+                            this.navigateTo(newPath);
                         };
 
                         dirsContainer.appendChild(dirEl);
                 });
             }
 
+            
+
             populateFiles() {
-                const { files } = this.filesystem.getCurrentDirectoryContents();
+                const { files } = this.filesystem.getCurrentDirContents();
                 const filesContainer = document.getElementById('nav-files');
 
                 filesContainer.innerHTML = '';
@@ -415,7 +437,7 @@
             // HelloWorld(print)
 
             navBack() {
-                this.navigateUp();
+                this.navUp();
             }
 
             navUp() {
@@ -602,29 +624,29 @@
             }
         }
 
-        let fileManager;
+        let FileManager;
         document.addEventListener('DOMContentLoaded', () => {
-            fileManager = new FileManagerUI();
+            FileManager = new FileManagerUI();
 
             document.addEventListener('keydown', (e) => {
                 if (e.ctrlKey) {
                     switch(e.key) {
                         case 'n':
                             e.preventDefault();
-                            fileManager.createNew();
+                            FileManager.createNew();
                             break;
                         case 'o':
                             e.preventDefault();
-                            fileManager.openFile();
+                            FileManager.openFile();
                             break;
                         case 'f':
                             e.preventDefault();
                             document.getElementById('location-input').focus();
                             break;
                     }
-                } else if (e.key === 'Delete' && fileManager.selectedItem) {
+                } else if (e.key === 'Delete' && FileManager.selectedItem) {
                     e.preventDefault();
-                    fileManager.deleteSelected();
+                    FileManager.deleteSelected();
                 }
             });
         });
