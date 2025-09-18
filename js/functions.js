@@ -11,6 +11,12 @@
                 width: 800,
                 height: 600,
                 topbarName: 'Terminal'
+            },
+            'v86 Subsystem': {
+                url: './apps/v86shell.html',
+                width: 1000,
+                height: 800,
+                topbarName: 'v86 Subsystem'
             }
         };
 
