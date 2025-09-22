@@ -244,11 +244,11 @@
                 document.querySelectorAll('.submenu').forEach(sub => {
                     if (sub !== submenu) sub.style.display = 'none';
                 });
-
+                        
                 if (submenu) {
                     submenu.style.display = 'flex';
                     positionSubmenu(submenu, trigger);
-                    activeSubmenu = trigger;
+                    activeSubmenu = submenu;
                 }
             });
 
@@ -558,6 +558,14 @@
                     iframe.contentWindow.focus();
                 }
             }
+        });
+
+        appsMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        document.querySelectorAll('.submenu').forEach(submenu => {
+            submenu.addEventListener('click', (e) => e.stopPropagation());
         });
 
         
