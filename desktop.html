@@ -9,7 +9,7 @@
     <body>
         <div class="topbar">
             <button class="tb-button-sel" id="tb-main-btn">Desktop</button>
-            <button class="tb-button" onClick="reboot();">Exit</button>
+            <!-- <button class="tb-button" onClick="reboot()">Exit</button> -->
             <div class="topbar-lines"></div>
         </div>
 
@@ -62,9 +62,9 @@
         </div>
 
         <div class="submenu" id="development-submenu">
-            <button class="menu-item" onclick="alert('hey, so.. i kinda couldnt get v86 to work inside of a typical window, so i guess we gotta switch the page to the v86shell instead, sorry!'); window.location.href = './apps/v86shell.html'">
+            <button class="menu-item" onclick="launchApp('v86 Subsystem')">
                 <div class="context-menu-thing"></div>
-                <span class="m-text">v86 Shell</span>
+                <span class="m-text">v86 Subsystem</span>
             </button>
             <button class="menu-item" onclick="launchApp('Terminal')">
                 <div class="context-menu-thing"></div>
@@ -87,6 +87,10 @@
             <button class="menu-item" onclick="launchApp('File Manager')">
                 <div class="context-menu-thing"></div>
                 <span class="m-text">File Manager</span>
+            </button>
+            <button class="menu-item" onclick="launchApp('Image Viewer')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Image Viewer</span>
             </button>
             <button class="menu-item" onclick="launchApp('Paint')">
                 <div class="context-menu-thing"></div>

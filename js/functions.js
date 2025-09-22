@@ -8,15 +8,33 @@
             },
             'Terminal': {
                 url: './apps/terminal.html',
-                width: 800,
-                height: 600,
+                width: 600,
+                height: 400,
                 topbarName: 'Terminal'
             },
             'v86 Subsystem': {
                 url: './apps/v86shell.html',
-                width: 1000,
-                height: 800,
+                width: 600,
+                height: 400,
                 topbarName: 'v86 Subsystem'
+            },
+            'Snake': {
+                url: './apps/snake.html',
+                width: 300,
+                height: 400,
+                topbarName: 'Snake'
+            },
+            'Text Editor': {
+                url: './apps/texteditor.html',
+                width: 700,
+                height: 500,
+                topbarName: 'Text Editor'
+            },
+            'Image Viewer': {
+                url: './apps/imageviewer.html',
+                width: 700,
+                height: 500,
+                topbarName: 'Image Viewer'
             }
         };
 
@@ -94,8 +112,32 @@
         function showAppsMenu() {
             hideAllMenus();
             const rect = appsBtn.getBoundingClientRect();
-            appsMenu.style.left = `${rect.left}px`;
-            appsMenu.style.bottom = `${window.innerHeight - rect.top + 2}px`;
+            const menuWidth = appsMenu.offsetWidth || 200;
+            const menuHeight = appsMenu.offsetHeight || 300;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const taskbarHeight = 30;
+
+            let left = rect.left;
+            let bottom = windowHeight - rect.top + 2;
+
+            if (left + menuWidth > windowWidth) {
+                left = windowWidth - menuWidth - 5;
+            }
+
+            if (left < 0) {
+                left = 5;
+            }
+
+            if (rect.top - menuHeight < 25){
+                appsMenu.style.top = `${rect.bottom + 2}px`;
+                appsMenu.style.bottom = 'auto';
+            } else {
+                appsMenu.style.bottom = `${bottom}px`;
+                appsMenu.style.top = 'auto';
+            }
+
+            appsMenu.style.left = `${left}px`;
             appsMenu.style.display = 'flex';
             appsBtn.classList.add('active');
         }
@@ -116,12 +158,12 @@
             const btns = tb.querySelectorAll('.tb-button');
             btns.forEach(btn => btn.remove());
 
-            const secBtn = document.createElement('button');
-            secBtn.className = 'tb-button';
-            secBtn.textContent = 'File';
+            // const secBtn = document.createElement('button');
+            // secBtn.className = 'tb-button';
+            // secBtn.textContent = 'File';
 
-            const lines = tb.querySelector('.topbar-lines');
-            tb.insertBefore(secBtn, lines);
+            // const lines = tb.querySelector('.topbar-lines');
+            // tb.insertBefore(secBtn, lines);
         }
 
         function showTbMenu(btn, items) {
@@ -204,11 +246,9 @@
                 });
 
                 if (submenu) {
-                    const triggerRect = trigger.getBoundingClientRect();
-                    submenu.style.left = `${triggerRect.right - 2}px`;
-                    submenu.style.top = `${triggerRect.top}px`;
                     submenu.style.display = 'flex';
-                    activeSubmenu = submenu;
+                    positionSubmenu(submenu, trigger);
+                    activeSubmenu = trigger;
                 }
             });
 
@@ -421,126 +461,37 @@
             windowEl.classList.toggle('maximised');
         }
 
-        function makeWindowResizable(windowEl) {
-            const MIN_WIDTH = 300;
-            const MIN_HEIGHT = 200;
-    
-            const handles = windowEl.querySelectorAll('.resize-handle');
-    
-            handles.forEach(handle => {
-                handle.onmousedown = function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-            
-                    const direction = Array.from(this.classList).find(cls => cls !== 'resize-handle');
-                    const startX = e.clientX;
-                    const startY = e.clientY;
-                    const rect = windowEl.getBoundingClientRect();
-            
-                    const cursors = {
-                        'n': 'n-resize',
-                        's': 's-resize', 
-                        'e': 'e-resize', 
-                        'w': 'w-resize',
-                        'ne': 'ne-resize', 
-                        'nw': 'nw-resize', 
-                        'se': 'se-resize', 
-                        'sw': 'sw-resize'
-                    };
-                    document.body.style.cursor = cursors[direction];
-            
-                    document.onmousemove = function(moveEvent) {
-                        const dx = moveEvent.clientX - startX;
-                        const dy = moveEvent.clientY - startY;
-                
-                        let width = rect.width;
-                        let height = rect.height;
-                        let left = rect.left;
-                        let top = rect.top;
-                
-                        if (direction.includes('e')) width = Math.max(MIN_WIDTH, rect.width + dx);
-                        if (direction.includes('w')) {
-                            width = Math.max(MIN_WIDTH, rect.width - dx);
-                            left = rect.left + (rect.width - width);
-                        }
-                        if (direction.includes('s')) height = Math.max(MIN_HEIGHT, rect.height + dy);
-                        if (direction.includes('n')) {
-                            height = Math.max(MIN_HEIGHT, rect.height - dy);
-                            top = rect.top + (rect.height - height);
-                        }
-                
-                        windowEl.style.width = width + 'px';
-                        windowEl.style.height = height + 'px';
-                        windowEl.style.left = left + 'px';
-                        windowEl.style.top = top + 'px';
-                    };
-            
-                    document.onmouseup = function() {
-                        document.onmousemove = null;
-                        document.onmouseup = null;
-                        document.body.style.cursor = '';
-                    };
-                };
-            });
-        }
+        function positionSubmenu(submenu, parentItem) {
+            const rect = parentItem.getBoundingClientRect();
+            const submenuWidth = submenu.offsetWidth;
+            const submenuHeight = submenu.offsetHeight;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const taskbarHeight = 33.5;
+            const topbarHeight = 25;
 
+            let left = rect.right + 2;
+            let top = rect.top;
 
-        function startResize(e, windowEl, direction) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const MIN_WIDTH = 100;
-            const MIN_HEIGHT = 50;
-
-            const startX = e.clientX;
-            const startY = e.clientY;
-
-            const rect = windowEl.getBoundingClientRect();
-            const startWidth = rect.width;
-            const startHeight = rect.height;
-            const startLeft = rect.left;
-            const startTop = rect.top;
-
-            function onMouseMove(ev) {
-                const dx = ev.clientX - startX;
-                const dy = ev.clientY - startY;
-
-                let newWidth = startWidth;
-                let newHeight = startHeight;
-                let newLeft = startLeft;
-                let newTop = startTop;
-
-                if (direction.includes('e')) {
-                    newWidth = Math.max(MIN_WIDTH, startWidth + dx);
-                }
-                if (direction.includes('w')) {
-                    newWidth = Math.max(MIN_WIDTH, startWidth - dx);
-                    newLeft = startLeft + (startWidth - newWidth);
-                }
-                if (direction.includes('s')) {
-                    newHeight = Math.max(MIN_HEIGHT, startHeight + dy);
-                }
-                if (direction.includes('n')) {
-                    newHeight = Math.max(MIN_HEIGHT, startHeight - dy);
-                    newTop = startTop + (startHeight - newHeight);
-                }
-
-                windowEl.style.width = newWidth + 'px';
-                windowEl.style.height = newHeight + 'px';
-                windowEl.style.left = newLeft + 'px';
-                windowEl.style.top = newTop + 'px';
+            if (left + submenuWidth > windowWidth) {
+                left = rect.left - submenuWidth - 2;
             }
 
-            function onMouseUp() {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-                document.body.style.cursor = '';
+            if (left < 0) {
+                left = 5;
             }
 
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            if (top + submenuHeight > windowHeight - taskbarHeight) {
+                top = windowHeight - taskbarHeight - submenuHeight;
+            }
 
-            document.body.style.cursor = getComputedStyle(e.target).cursor;
+            if (top < topbarHeight) {
+                top = topbarHeight;
+            }
+
+            submenu.style.left = `${left}px`;
+            submenu.style.top = `${top}px`;
+            submenu.style.bottom = 'auto';
         }
 
         function launchApp(appName) {
@@ -553,6 +504,10 @@
             windowEl.style.width = config.width + 'px';
             windowEl.style.height = config.height + 'px';
             windowEl.style.zIndex = getHighestZIndex() + 1;
+
+            windowEl.style.position = 'absolute';
+            windowEl.style.left = Math.max(0, (window.innerWidth - config.width) / 2) + 'px';
+            windowEl.style.top = Math.max(25, 25 + (window.innerHeight - 55 - config.height) / 2) + 'px';
             // note to self: eventually change these to icon buttons instead of using unicode symbols
             windowEl.innerHTML = `
                 <div class="titlebar">
@@ -580,7 +535,6 @@
 
             document.body.appendChild(windowEl);
             makeWindowDraggable(windowEl);
-            makeWindowResizable(windowEl);
 
             openWindows.set(windowId, {
                 name: appName,
@@ -595,3 +549,15 @@
             addToTaskbar(windowId, appName);
             hideAllMenus();
         }
+
+        document.addEventListener('click', (e) => {
+            const window = e.target.closest('.window');
+            if (window && window.classList.contains('active')) {
+                const iframe = window.querySelector('iframe');
+                if (iframe && e.target.closest('.iframe-container')) {
+                    iframe.contentWindow.focus();
+                }
+            }
+        });
+
+        

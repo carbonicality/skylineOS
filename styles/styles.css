@@ -1,4 +1,5 @@
             /* font face declarations */
+            /* its indented a bunch because i took it from my desktop html page and put it into here */
             @font-face {
                 font-family: 'terminus';
                 src: url('../fonts/terminus-reg.ttf');
@@ -287,27 +288,27 @@
             .context-menu-apps {
                 width: 150px;
                 display: none;
-                position: absolute;
+                position: fixed;
                 flex-direction: column;
                 background-color: #2a2a2a;
                 border: 1.5px solid #464748;
                 color: white;
                 box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
                 overflow: hidden;
-                z-index: 1000;
+                z-index: 2500;
             }
 
             .submenu {
                 width: 150px;
                 display: none;
-                position: absolute;
+                position: fixed;
                 flex-direction: column;
                 background-color: #2a2a2a;
                 border: 1.5px solid #464748;
                 color: white;
                 box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
                 overflow: hidden;
-                z-index: 1001;
+                z-index: 2501;
             }
 
             .menu-item {
@@ -401,20 +402,6 @@
             .window.minimised {
                 display: none;
             }
-
-            .resize-handle {
-                position: absolute;
-                background: transparent;
-            }
-
-            .resize-handle.nw { top: -5px; left: -5px; width: 10px; height: 10px; cursor: nw-resize; }
-            .resize-handle.ne { top: -5px; right: -5px; width: 10px; height: 10px; cursor: ne-resize; }
-            .resize-handle.sw { bottom: -5px; left: -5px; width: 10px; height: 10px; cursor: sw-resize; }
-            .resize-handle.se { bottom: -5px; right: -5px; width: 10px; height: 10px; cursor: se-resize; }
-            .resize-handle.n { top: -5px; left: 10px; right: 10px; height: 10px; cursor: n-resize; }
-            .resize-handle.e { right: -5px; top: 10px; bottom: 10px; width: 10px; cursor: e-resize; }
-            .resize-handle.s { bottom: -5px; left: 10px; right: 10px; height: 10px; cursor: s-resize; }
-            .resize-handle.w { left: -5px; top: 10px; bottom: 10px; width: 10px; cursor: w-resize; }
 
             .button-text {
                 color: white;
@@ -516,4 +503,14 @@
 
             .window.inactive .titlebar {
                 background-image: linear-gradient(to right, #5a5a5a, #7a7a7a);
+            }
+
+            .window iframe {
+                pointer-events: auto;
+                outline: none;
+                border: none;
+            }
+
+            .window.active iframe {
+                z-index: 1;
             }

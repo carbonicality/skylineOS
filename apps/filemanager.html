@@ -148,6 +148,14 @@
                 font-family: 'spleen-bold';
             }
 
+            .nav-button:active {
+                border: 2px inset #1f1f1f;
+            }
+
+            .nav-button:hover {
+                background-color: #3f3f3f
+            }
+
             .nav-dirs {
                 width: 20%;
                 background-color: #272727;
@@ -207,10 +215,6 @@
                 color: #ffeb3b;
             }
 
-            .v86-file {
-                color: #4caf50;
-            }
-
             .breadcrumb {
                 font-size: 14px;
                 color: #aaa;
@@ -265,6 +269,9 @@
             init() {
                 this.filesystem.on('onDirectoryChange', (path) => this.onDirectoryChange(path));
                 this.filesystem.on('onFileSystemUpdate', () => this.refresh());
+
+                this.currentDirEl = document.getElementById('current-directory');
+                this.currentPath = this.filesystem.getCurrentPath();
 
                 this.refresh();
 
@@ -563,24 +570,6 @@
                     info += `Path: ${path}`;
 
                     alert('Properties:\n\n' + info);
-                }
-            }
-
-            initialiseV86(v86Instance) {
-                this.filesystem.initialiseV86Integration(v86Instance);
-                this.refresh();
-            }
-
-            transferToV86() {
-                if (!this.selectedItem || this.selectedItem.type !== 'file') {
-                    alert("SELECT A FILE TO TRANSFER TO V86!!!!!!!!1111111");
-                    return;
-                }
-
-                if (this.filesystem.transferToV86(this.selectedItem.name)) {
-                    alert(`File ${this.selectedItem.name} transferred to v86 filesystem!`);
-                } else {
-                    alert("Oh noes! Failed to transfer file to v86.")
                 }
             }
 

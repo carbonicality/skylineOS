@@ -4,8 +4,7 @@
 class SkylineFilesystem {
     constructor() {
         this.currentPath = '/';
-        this.fileSystem = this.initialiseFileSystem();
-        this.v86FileSystem = null; // we'll init v86 once its loaded
+        this.fileSystem = this.loadFileSystem();
         this.callbacks = {
             onDirectoryChange: [],
             onFileSelect: [],
@@ -27,14 +26,14 @@ class SkylineFilesystem {
                                 type: 'file',
                                 name: 'readme.txt',
                                 size: 0,
-                                content: '', // add content once text editor is added
-                                modified: '17/09/25' // test date, well add date system later
+                                content: 'Welcome to SkylineOS!',
+                                modified: '17/09/25'
                             }
                         }
                     },
-                    'Wallpapers': {
+                    'Pictures': {
                         type: 'directory',
-                        name: 'Wallpapers',
+                        name: 'Pictures',
                         children: {
                             'default.jpg': {
                                 type: 'file',
@@ -49,12 +48,6 @@ class SkylineFilesystem {
                         type: 'directory',
                         name: 'Desktop',
                         children: {}
-                    },
-                    'v86_filesystem': {
-                        type: 'directory',
-                        name: 'v86 Filesystem',
-                        children: {},
-                        special: 'v86'
                     }
                 }
             }
@@ -151,6 +144,7 @@ class SkylineFilesystem {
             modified: new Date()
         };
 
+        this.saveFileSystem();
         this.triggerCallback('onFileSystemUpdate');
         return true;
     }
@@ -217,49 +211,8 @@ class SkylineFilesystem {
             item.content = content;
             item.size = content.length;
             item.modified = new Date();
+            this.saveFileSystem();
             this.triggerCallback('onFileSystemUpdate');
-            return true;
-        }
-        return false;
-    }
-
-    // whoa v86 stuff?!?!?!?! wowwieee
-
-    initialiseV86Integration(v86Instance) {
-        this.v86FileSystem = v86Instance;
-
-        if (v86Instance && v86Instance.filesystem) {
-            this.syncV86Filesystem();
-        }
-    }
-
-    syncV86Filesystem() {
-        if (!this.v86FileSystem) return;
-
-        try {
-            const v86Dir = this.getItemAtPath('/v86_filesystem');
-            if (v86Dir) {
-                v86Dir.children = {};
-
-                this.addV86FilesToDirectory(v86Dir);
-            }
-        } catch (error) {
-            console.error('oh crap, error syncing v86 filesystem!!!');
-        }
-    }
-
-    addV86FilesToDirectory(directory) {
-        // well add this when we acc implement v86 so that its correct with the structure of v86
-    }
-
-    transferToV86(fileName, path = null) {
-        const targetPath = path || this.currentPath;
-        const fullPath = this.joinPaths(targetPath, fileName);
-        const item = this.getItemAtPath(fullPath);
-
-        if (item && item.type === 'file' && this.v86FileSystem) {
-            // well implement this when v86 is added
-            console.log("transferring")
             return true;
         }
         return false;
@@ -379,6 +332,26 @@ class SkylineFilesystem {
             breadcrumbs.push({ name: part, path: currentPath });
         });
         return breadcrumbs;
+    }
+
+    loadFileSystem() {
+        try {
+            const saved = localStorage.getItem('skylineos-filesystem');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+        } catch (e) {
+            console.warn('failed to load filesystem from LS: ', e);
+        }
+        return this.initialiseFileSystem();
+    }
+
+    saveFileSystem() {
+        try {
+            localStorage.setItem('skylineos-filesystem', JSON.stringify(this.fileSystem));
+        } catch (e) {
+            console.warn('failed to save filesystem to LS: ', e);
+        }
     }
 }
 
