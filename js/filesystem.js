@@ -37,10 +37,11 @@ class SkylineFilesystem {
                         children: {
                             'default.jpg': {
                                 type: 'file',
-                                name: 'default.jpg',
+                                name: 'skylineos.png',
                                 size: 0,
-                                content: '',
-                                modified: '17/09/25' // test date, well add date system later
+                                content: '../icons/skyline2.png',
+                                isFilePath: true,
+                                modified: '17/09/25'
                             }
                         }
                     },
@@ -141,6 +142,7 @@ class SkylineFilesystem {
             name: name,
             size: content.length,
             content: content,
+            isFilePath: isFilePath,
             modified: new Date()
         };
 

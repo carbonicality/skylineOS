@@ -11,6 +11,12 @@ SkylineOS' design is inspired from SerenityOS and GRUB, and its commands are ins
 - how to use v86
 
 ## NOTE:
-If you want to use v86 functionality, you will have to use a local server to host it.
-If you have python3, you can:
-`git clone` this GitHub repo, cd into it, and run `python3 -m http.server 8080` and then go to: `http://localhost:8080/bootloader.html` to run this project.
+If you are not using the Vercel link (https://skyline-os.vercel.app/desktop.html), or any other dynamic hosting platform, and want to use the v86 functionality, you can use this project locally using python3 and git clone.
+Step 1:
+`git clone https://github.com/carbonicality/skylineos`
+Step 2:
+`cd <path to skylineos directory>`
+Step 3:
+`python3 -m http.server 8080`
+
+You will then be able to use this project and use v86!

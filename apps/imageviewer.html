@@ -303,13 +303,25 @@
                 reader.readAsDataURL(file);
             }
 
+            loadImageFromPath(filePath, fileName) {
+                const img = new Image();
+                img.onload = () => {
+                    this.displayImage(filePath, fileName);
+                    this.currentImageData = filePath;
+                };
+                img.onerror = () => {
+                    alert('uh oh! failed to display image from file path: ' + filePath);
+                };
+                img.src = filePath;
+            }
+
             openFromPictures() {
                 this.filesystem.navigateTo('/Pictures');
                 const { files } = this.filesystem.getCurrentDirContents();
                 const imageFiles = files.filter(f => this.isImageFile(f.name));
 
                 if (imageFiles.length === 0) {
-                    alert('uh oh! no image files found in /Pictures');
+                    alert('uh oh! no files found in pictures :(');
                     return;
                 }
 
@@ -323,11 +335,16 @@
 
                 if (choiceNum > 0 && choiceNum <= imageFiles.length) {
                     const selectedFile = imageFiles[choiceNum - 1];
-                    const content = this.filesystem.getFileContent(selectedFile.name, '/Pictures');
+                    const fileData = this.filesystem.getItemAtPath('/Pictures' + selectedFile.name);
+                    const content = fileData.content;
 
                     if (content !== null) {
-                        this.displayImage(content, selectedFile.name);
-                        this.currentImageData = content;
+                        if (fileData.isFilePath) {
+                            this.loadImageFromPath(content, selectedFile.name);
+                        } else {
+                            this.displayImage(content, selectedFile.name);
+                            this.currentImageData = content;
+                        }
                         this.currentFile = selectedFile.name;
                     } else {
                         alert('uh oh! failed to display image: ' + selectedFile.name);
@@ -341,7 +358,7 @@
                     return;
                 }
 
-                const fileName = prompt('enter filename to save image as (will be saved to /Pictures): ');
+                const fileName = prompt('enter filename to save image (will be saved to /Pictures): ');
                 if (!fileName) return;
 
                 let finalFileName = fileName;
@@ -349,15 +366,20 @@
                     finalFileName += '.jpg';
                 }
 
+                if (typeof this.currentImageData === 'string' && this.currentImageData.startsWith('../')) {
+                    alert('could not save file path refs. please load the actual data first.');
+                    return;
+                }
+
                 if (this.filesystem.getFileContent(finalFileName, '/Pictures') !== null) {
-                    if (!confirm('are you sure you want to overwrite this existing file? ')) {
+                    if (!confirm('are you sure you want to overwrite this existing file?')) {
                         return;
                     }
 
-                    if (this.filesystem.updateFileContent(finalFileName, this.currentImageData, '/Pictures')) {
+                    if (this.filesystem.updateFileContent(finalFileName, this.currentImageData, '/Pictures' !== 'null')) {
                         this.currentFile = finalFileName;
                         this.fileNameEl.textContent = finalFileName;
-                        alert("successfully saved image: " + finalFileName);
+                        alert('successfully saved image: ' + finalFileName);
                     } else {
                         alert('uh oh! failed to save image: ' + finalFileName);
                     }
