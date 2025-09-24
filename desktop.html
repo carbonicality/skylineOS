@@ -92,10 +92,6 @@
                 <div class="context-menu-thing"></div>
                 <span class="m-text">Image Viewer</span>
             </button>
-            <button class="menu-item" onclick="launchApp('Paint')">
-                <div class="context-menu-thing"></div>
-                <span class="m-text">Paint</span>
-            </button>
         </div>
 
         <div class="submenu" id="system-submenu">
@@ -104,12 +100,13 @@
                 <span class="m-text">Settings</span>
             </button>
             <div class="menu-separator"></div>
-            <button class="menu-item" onclick="alert('Logging out...')">
+            <button class="menu-item" onclick="window.location = 'logon.html'">
                 <div class="context-menu-thing"></div>
                 <span class="m-text">Logout</span>
             </button>
         </div>
 
+        <!-- window layout -->
         <!--<div class="window">
             <div class="titlebar">
                 title

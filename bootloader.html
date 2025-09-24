@@ -57,7 +57,7 @@
             <p class="header">SKUB - SkylineOS Unified Bootloader&nbsp;&nbsp;&nbsp;version 1.0.0</p>
             <div class="container">
                 <div id="opt0" class="opt sel">SkylineOS</div>
-                <div id="opt1" class="opt">Advanced options for SkylineOS</div>
+                <div id="opt1" class="opt">Reset SkylineOS</div>
                 <div id="opt2" class="opt">SEFI Firmware Settings</div>
             </div>
             <p class="desc">Use the ↑ and ↓ keys to select which entry is highlighted.</p>
@@ -137,15 +137,17 @@
                 };
 
                 function adv_boot() {
-                    alert('adv boot');
+                    alert('the boot entry: `SkylineOS` will now be reset. all data stored will be wiped, and the system will reboot.');
+                    localStorage.clear();
+                    window.location.reload();
                 }
 
                 function bios_boot() {
-                    alert('fwsettings boot')
+                    window.location = 'sefi.html';
                 }
 
                 function cli() {
-                    alert('cli')
+                    window.location = './apps/terminal.html';
                 }
         </script>
     </head>

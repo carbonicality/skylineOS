@@ -35,6 +35,12 @@
                 width: 700,
                 height: 500,
                 topbarName: 'Image Viewer'
+            },
+            'Settings': {
+                url: './apps/settings.html',
+                width: 600,
+                height: 400,
+                topbarName: 'Settings'
             }
         };
 
