@@ -41,6 +41,12 @@
                 width: 600,
                 height: 400,
                 topbarName: 'Settings'
+            },
+            'About': {
+                url: './apps/about.html',
+                width: 500,
+                height: 300,
+                topbarName: 'About'
             }
         };
 

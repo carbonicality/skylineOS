@@ -295,7 +295,7 @@
                 color: white;
                 box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
                 overflow: hidden;
-                z-index: 2500;
+                z-index: 250000;
             }
 
             .submenu {
