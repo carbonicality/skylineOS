@@ -283,6 +283,7 @@
                 color: white;
                 box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
                 overflow: hidden;
+                z-index: 2501;
             }
 
             .context-menu-apps {
@@ -295,7 +296,7 @@
                 color: white;
                 box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
                 overflow: hidden;
-                z-index: 250000;
+                z-index: 2501;
             }
 
             .submenu {
