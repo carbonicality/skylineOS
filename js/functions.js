@@ -47,6 +47,12 @@
                 width: 500,
                 height: 300,
                 topbarName: 'About'
+            },
+            'DOOM': {
+                url: './apps/doom.html',
+                width: 800,
+                height: 600,
+                topbarName: 'DOOM'
             }
         };
 
@@ -532,7 +538,7 @@
                     </div>
                 </div>
                 <div class="iframe-container">
-                    <iframe src="${config.url}"></iframe>
+                    <iframe src="${config.url}" allow="fullscreen; autoplay; pointer-lock" style="width: 100%; height: 100%; border: none;></iframe>
                 </div>
 
                 <div class="resize-handle nw"></div>

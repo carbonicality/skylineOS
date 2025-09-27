@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            @font-face {
+                font-family: 'terminus';
+                src: url('../fonts/terminus-reg.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold';
+                src: url('../fonts/terminus-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }  
+
+            @font-face {
+                font-family: 'terminus-ital';
+                src: url('../fonts/terminus-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold-ital';
+                src: url('../fonts/terminus-bold-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'tamzen-bold';
+                src: url('../fonts/tamzen-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'spleen-bold';
+                src: url('../fonts/spleen_bold.otf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'unifont';
+                src: url('../fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                background: black;
+                overflow: hidden;
+                font-family: 'terminus';
+            }
+
+            canvas {
+                width: 100vw;
+                height: 100vh;
+                object-fit: contain;
+                image-rendering: pixelated;
+                background: black;
+            }
+
+            #overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: black;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 15px;
+                color: white;
+                cursor: pointer;
+                z-index: 10;
+            }
+
+            #focus-reminder {
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 15px;
+                color: white;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="dosbox-canvas" tabindex="0"></canvas>
+        <div id="overlay">press [enter] or click into this window to start DOOM</div>
+        <div id="focus-reminder">click inside of this window to enable keyboard input for DOOM</div>
+    </body>
+    <script src="https://js-dos.com/6.22/current/js-dos.js"></script>
+    <script>
+        const canvas = document.getElementById('dosbox-canvas');
+        const overlay = document.getElementById('overlay');
+        const focusReminder = document.getElementById('focus-reminder');
+
+        let dosStarted = false;
+
+        function startDoom() {
+            overlay.style.display = 'none';
+            canvas.focus();
+            canvas.requestPointerLock?.();
+
+            Dos(canvas, {
+                wdosboxUrl: "https://js-dos.com/6.22/current/wdosbox.js"
+            }).ready((fs, main) => {
+                fs.extract("../files/doom.zip").then(() => {
+                    main(["-c", "C:\\doom.exe"]);
+                });
+            });
+
+            dosStarted = true;
+        }
+
+        overlay.addEventListener('click', startDoom);
+        overlay.addEventListener('keydown', e => {
+            if (e.key === 'Enter') startDoom();
+        });
+
+        overlay.tabIndex = 0;
+        overlay.focus();
+
+        document.addEventListener('click', () => {
+            if (dosStarted) {
+                canvas.focus();
+                focusReminder.style.opacity = 1;
+                setTimeout(() => { focusReminder.style.opacity = 0; }, 1500);
+            }
+        });
+
+        document.addEventListener('keydown', () => {
+            if (dosStarted) canvas.focus();
+        });
+    </script>
+</html>
