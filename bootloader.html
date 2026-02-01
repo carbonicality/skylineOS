@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>SKUB - SkylineOS Unified Bootloader</title>
+        <style>
+            @font-face {
+                font-family: 'unifont';
+                src: url('./fonts/unifont.ttf') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            body {
+                font-family: 'unifont';
+                background-color: black;
+                color: #c0c0c0;
+                font-size: 1rem;
+            }
+
+            .header {
+                text-align: center;
+                margin-top: 5vh;
+                padding-bottom: 1vh;
+            }
+
+            .container {
+                border: 2px solid #c0c0c0;
+                width: 90vw;
+                max-width: 1400px;
+                height: 80vh;
+                max-height: 500px;
+                display: flex;
+                margin: 0 auto;
+                padding: 4px 2px;
+                flex-direction: column;
+            }
+
+            .opt {
+                padding: 2px 4px;
+                white-space: pre;
+            }
+
+            .sel {
+                background-color: #c0c0c0;
+                color: black;
+            }
+
+            .desc {
+                margin-left: 6vw;
+                font-size: 1rem;
+                margin-bottom: -10px;
+            }
+        </style>
+        <body>
+            <p class="header">SKUB - SkylineOS Unified Bootloader&nbsp;&nbsp;&nbsp;version 1.0.0</p>
+            <div class="container">
+                <div id="opt0" class="opt sel">SkylineOS</div>
+                <div id="opt1" class="opt">Reset SkylineOS</div>
+                <div id="opt2" class="opt">SEFI Firmware Settings</div>
+            </div>
+            <p class="desc">Use the ↑ and ↓ keys to select which entry is highlighted.</p>
+            <p class="desc">Press enter to boot the selected OS or `c' for a command-line.</p>
+            <p class="desc" id="count"></p>
+        </body>
+        <script>
+                const options = document.querySelectorAll('.opt');
+                const count_text = document.getElementById('count');
+
+                let selected = 0;
+                let seconds = 5;
+                let interrupted = false;
+
+                function updateDisplay() {
+                    options.forEach((opt, idx) => {
+                        const baseText = opt.textContent.replace(/^\*?\s*/, '');
+                        if (idx === selected) {
+                            opt.textContent = '* ' + baseText;
+                            opt.classList.add('sel');
+                        } else {
+                            opt.textContent = '  ' + baseText;
+                            opt.classList.remove('sel');
+                        }
+                    });
+                }
+
+                updateDisplay();
+
+                count_text.innerHTML = `The selected entry will be executed automatically in ${seconds}s.`;
+
+                const countdown = setInterval(() => {
+                    if (interrupted) return;
+                    seconds--;
+                    count_text.innerHTML = `The selected entry will be executed automatically in ${seconds}s.`;
+                    if (seconds <= 0) {
+                        clearInterval(countdown);
+                        boot();
+                    }
+                }, 1000);
+
+                document.addEventListener('keydown', e => {
+                    if (!interrupted) {
+                        interrupted = true;
+                        count_text.innerHTML = ``;
+                    }
+
+                    if (e.key === 'ArrowUp') {
+                        selected = (selected - 1 + options.length) % options.length
+                    }
+                    if (e.key === 'ArrowDown') {
+                        selected = (selected + 1) % options.length
+                    }
+                    if (e.key === 'Enter') {
+                        boot();
+                    }
+                    if (e.key === 'c') {
+                        cli();
+                    }
+                    updateDisplay();
+                });
+
+                function boot() {
+                    if (selected === 0) {
+                        main_boot();
+                    }
+                    else if (selected === 1) {
+                        adv_boot();
+                    }
+                    else if (selected === 2) {
+                        bios_boot();
+                    }
+                };
+
+                function main_boot() {
+                    window.location = 'bootup.html';
+                };
+
+                function adv_boot() {
+                    alert('the boot entry: `SkylineOS` will now be reset. all data stored will be wiped, and the system will reboot.');
+                    localStorage.clear();
+                    window.location.reload();
+                }
+
+                function bios_boot() {
+                    window.location = 'sefi.html';
+                }
+
+                function cli() {
+                    window.location = './apps/terminal.html';
+                }
+        </script>
+    </head>
+</html>

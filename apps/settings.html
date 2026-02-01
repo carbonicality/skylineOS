@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            @font-face {
+                font-family: 'terminus';
+                src: url('../fonts/terminus-reg.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold';
+                src: url('../fonts/terminus-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }  
+
+            @font-face {
+                font-family: 'terminus-ital';
+                src: url('../fonts/terminus-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold-ital';
+                src: url('../fonts/terminus-bold-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'tamzen-bold';
+                src: url('../fonts/tamzen-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'spleen-bold';
+                src: url('../fonts/spleen_bold.otf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'unifont';
+                src: url('../fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            body {
+                font-family: 'terminus';
+                color: white;
+                font-size: 18px;
+                background-color: #272727;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .opt-bar {
+                width: calc(100% - 10px);
+                height: 30px;
+                margin: 5px;
+                margin-bottom: 0;
+                border: 1.5px solid #1f1f1f;
+                align-items: center;
+                display: flex;
+                padding: 0 10px;
+                box-sizing: border-box;
+                justify-content: space-between;
+            }
+
+            .opt-txt {
+                font-family: 'terminus';
+                color: white;
+                font-size: 14px;
+            }
+
+            .opt-btn {
+                background-color: transparent;
+                font-family: 'terminus';
+                color: white;
+                border: 1px outset #1f1f1f;
+                padding: 3px 8px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            .opt-btn:hover {
+                background-color: #333;
+            }
+
+            .opt-desc {
+                font-style: italic;
+                font-size: 12px;
+                color: #5c5c5c;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="opt-bar">
+            <div class="opt-txt">Reset storage (localStorage)</div>
+            <div class="opt-desc">Resets the system by running localStorage.clear</div>
+            <div class="opt-btn" onclick="resetSystem()">Reset</div>
+        </div>
+    </body>
+    <script>
+        function resetSystem() {
+            localStorage.clear();
+            alert('resetting system! this tab will now `reboot`')
+            window.location.href = '../bootloader.html';
+        }
+    </script>
+</html>

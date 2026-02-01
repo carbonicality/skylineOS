@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            @font-face {
+                font-family: 'terminus';
+                src: url('./fonts/terminus-reg.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold';
+                src: url('./fonts/terminus-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }  
+
+            @font-face {
+                font-family: 'terminus-ital';
+                src: url('./fonts/terminus-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold-ital';
+                src: url('./fonts/terminus-bold-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'tamzen-bold';
+                src: url('./fonts/tamzen-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'spleen-bold';
+                src: url('./fonts/spleen_bold.otf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'unifont';
+                src: url('./fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            html {
+                height: 100%;
+                margin: 0;
+            }
+
+            body {
+                font-family: 'unifont';
+                background-color: blue;
+                height: 100%;
+                margin: 0;
+            }
+
+            .main-content {
+                background-color: #bbbbbb;
+                margin: 30px 0 30px 0;
+                height: calc(100% - 60px);
+                display: flex;
+            }
+
+            .otl-content {
+                background-color: transparent;
+                border: 1.5px solid blue;
+                margin: 20px auto;
+                padding: 15px;
+                height: calc(100% - 40px);
+                width: calc(100% - 40px);
+                box-sizing: border-box;
+            }
+
+            .title-text {
+                color: white;
+                font-family: 'unifont';
+                font-size: 18px;
+                text-align: center;
+                margin: 0;
+                margin-bottom: -25px;
+            }
+
+            .ft-text {
+                color: white;
+                font-family: 'unifont';
+                font-size: 18px;
+                text-align: center;
+                margin: 0;
+                margin-top: -25px;
+            }
+
+            .otl-text {
+                font-family: 'unifont';
+                color: black;
+                margin: 0;
+                display: flex;
+                justify-content: space-between;
+                line-height: 0.4;
+                padding: 30px 40px 0 40px;
+            }
+
+            .otl-label {
+                flex: 1;
+            }
+
+            .otl-value {
+                color: black;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div class="title-text">SEFI Setup</div>
+        <div class="main-content">
+            <div class="otl-content">
+                <div class="otl-text">
+                    <span class="otl-label">System time:</span>
+                    <span class="otl-value" id="sys-time"></span>
+                </div>
+                <div class="otl-text">
+                    <span class="otl-label">System date:</span>
+                    <span class="otl-value" id="sys-date"></span>
+                </div>
+                <div class="otl-text">
+                    <span class="otl-label">Installed OS:</span>
+                    <span class="otl-value">SkylineOS</span>
+                </div>
+                <div class="otl-text">
+                    <span class="otl-label">OS Version:</span>
+                    <span class="otl-value">1.0.0</span>
+                </div>
+                <div class="otl-text">
+                    <p>&nbsp;</p>
+                </div>
+                <div class="otl-text">
+                    <span class="otl-label">Processor:</span>
+                    <span class="otl-value">SkyCorp o7 1000U Processor @ 2.7ShZ</span>
+                </div>
+                <div class="otl-text">
+                    <span class="otl-label">Memory:</span>
+                    <span class="otl-value">1000SU</span>
+                </div>
+                <div class="otl-text">
+                    <span class="otl-label">SEFI Version:</span>
+                    <span class="otl-value">1.0.0</span>
+                </div>
+            </div>
+        </div>
+        <div class="ft-text">Press 'c' to return to bootloader.</div>
+    </body>
+    <script>
+        function updateDT() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-GB', { hour12: false });
+            const date = now.toLocaleDateString('en-GB');
+
+            document.getElementById('sys-time').textContent = time;
+            document.getElementById('sys-date').textContent = date;
+        }
+
+        setInterval(updateDT, 1000);
+        updateDT();
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key.toLowerCase() === "c") {
+                window.location.href = "bootloader.html";
+            }
+        });
+    </script>
+</html>

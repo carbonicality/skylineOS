@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- that boot up verbose stuff that grub and arch does -->
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            @font-face {
+                font-family: 'unifont';
+                src: url('./fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            body {
+                font-family: 'unifont';
+                color: white;
+                font-size: 16px;
+                background-color: black;
+            }
+
+            .status-ln {
+                display: none;
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            .ok {
+                color: rgb(12, 206, 12);
+            }
+
+            .welcome {
+                color: rgb(0, 255, 251);
+            }
+
+            .warn {
+                color: rgb(255, 145, 0);
+            }
+        </style>
+    </head>
+    <body>
+        <p class="status-ln phase1">Booting `SkylineOS, with Skykernel'</p>
+        <p class="status-ln phase1">Loading SkylineOS...</p>
+        <p class="status-ln phase1">Loading initial skydisk...</p>
+
+        <p class="status-ln phase2"><span class="welcome">Welcome to SkylineOS!</span></p>
+        <p class="status-ln phase2"><span class="welcome">These verbose messages are not real, and do not respresent actual system loading!</span></p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Loading Skykernel v1.0.0...</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Initialising something...</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Loading Skyline modules...</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Working on something...</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Procrastinating...</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Setting hostname to skyline-pc</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Working on something...</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Allocating memory pages</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Setting up process scheduler</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Mounting virtual root filesystem</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Linking system libraries</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Verifying skydisk checksum</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Starting Skyline init manager</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Creating /dev tree</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Starting framebuffer terminal</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Loading session manager</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Mounting /home/user</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Loading user environment</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;] Launching graphical shell</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Detecting CPU features...</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Enabling virtual memory manager</p>
+        <p class="status-ln phase2">[&nbsp;<span class="warn">WARN</span>&nbsp;]&nbsp;Deprecated API detected, switching to compatibility mode</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Loading kernel modules...</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Initializing network stack</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Bringing up loopback interface</p>
+        <p class="status-ln phase2">[&nbsp;<span class="warn">WARN</span>&nbsp;]&nbsp;DHCP server response delayed</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Configuring network interfaces</p>
+        <p class="status-ln phase2">[&nbsp;<span class="warn">WARN</span>&nbsp;]&nbsp;Some kernel modules took longer than expected to load</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Checking disk integrity</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Disk check completed, no errors found</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Initializing sound subsystem</p>
+        <p class="status-ln phase2">[&nbsp;<span class="warn">WARN</span>&nbsp;]&nbsp;Audio device fallback activated</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Starting system logging daemon</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Loading timezone data</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Configuring system locale</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Setting up firewall rules</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Loading input device drivers</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Keyboard and mouse initialized</p>
+        <p class="status-ln phase2">[&nbsp;<span class="warn">WARN</span>&nbsp;]&nbsp;Battery health reporting unavailable</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Starting power management services</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Initializing display server</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Loading graphical drivers</p>
+        <p class="status-ln phase2">[&nbsp;<span class="warn">WARN</span>&nbsp;]&nbsp;Fallback to generic graphics driver</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>]&nbsp;Starting window manager</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>]&nbsp;Launching desktop environment</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>]&nbsp;Loading user session preferences</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>]&nbsp;Restoring last user session</p>
+        <p class="status-ln phase2">[&nbsp;<span class="warn">WARN</span>&nbsp;]&nbsp;Some session settings are deprecated</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Mounting removable media</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Network shares mounted</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Starting background tasks</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Initializing Bluetooth services</p>
+        <p class="status-ln phase2">[&nbsp;<span class="warn">WARN</span>&nbsp;]&nbsp;Bluetooth adapter not found</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Loading scheduled jobs</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;System ready for user login</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Starting login manager</p>
+        <p class="status-ln phase2">[&nbsp;<span class="ok">OK</span>&nbsp;]&nbsp;Ready.</p>
+
+
+    </body>
+    <script>
+        const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
+        async function bootSequence() {
+            const phase1 = document.querySelectorAll('.phase1');
+            const phase2 = document.querySelectorAll('.phase2');
+
+            for (let p of phase1) {
+                p.style.display = 'block';
+                if (document.body.scrollHeight > window.innerHeight) {
+                    window.scrollTo(0, document.body.scrollHeight);
+                } // this is redundant but im just keeping it for safety i suppose
+                await delay(500);
+            }
+
+            await delay(800);
+
+            document.body.innerHTML = '';
+
+            for (let p of phase2) document.body.appendChild(p);
+
+            for (let p of phase2) {
+                p.style.display = 'block';
+                if (document.body.scrollHeight > window.innerHeight) {
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+                await delay(50);
+            }
+
+            await delay(500);
+            window.location = 'logon.html';
+        }
+
+        bootSequence();
+    </script>
+</html>

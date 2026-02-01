@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <link rel="stylesheet" href="./styles/styles.css">
+    </head>
+    <body>
+        <div class="topbar">
+            <button class="tb-button-sel" id="tb-main-btn">Desktop</button>
+            <!-- <button class="tb-button" onClick="reboot()">Exit</button> -->
+            <div class="topbar-lines"></div>
+        </div>
+
+        <div class="taskbar">
+            <button class="appBtn" id="apps-btn">Apps</button>
+            <div class="taskbar-apps" id="taskbar-apps"></div>
+            <div class="info-container">
+                <p class="time-display">&nbsp;admin</p>
+                <p> |&nbsp;</p>
+                <p class="time-display" id="time">00:00</p>
+                <p> |&nbsp;</p>
+                <p class="date-display" id="date">0/0/0</p>
+            </div>
+        </div>
+
+        <div class="context-menu-lgn">
+             <button class="menu-item" onclick="alert('Login Manager v1.0.0')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">About...</span>
+            </button>
+            <button class="menu-item" onclick="reboot()">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Reboot...</span>
+            </button>
+        </div>
+
+        <div class="context-menu-apps" id="apps-menu">
+            <button class="menu-item" onclick="launchApp('About')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">About SkylineOS</span>
+            </button>
+            <div class="menu-separator"></div>
+            <button class="menu-item with-arrow" data-submenu="development">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Development</span>
+            </button>
+            <button class="menu-item with-arrow" data-submenu="games">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Games</span>
+            </button>
+            <button class="menu-item with-arrow" data-submenu="utilities">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Utilities</span>
+            </button>
+            <div class="menu-separator"></div>
+            <button class="menu-item with-arrow" data-submenu="system">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">System</span>
+            </button>
+        </div>
+
+        <div class="submenu" id="development-submenu">
+            <button class="menu-item" onclick="launchApp('v86 Subsystem')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">v86 Subsystem</span>
+            </button>
+            <button class="menu-item" onclick="launchApp('Terminal')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Terminal</span>
+            </button>
+        </div>
+
+        <div class="submenu" id="games-submenu">
+            <button class="menu-item" onclick="launchApp('Snake')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Snake</span>
+            </button>
+            <button class="menu-item" onclick="launchApp('DOOM')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">DOOM</span>
+            </button>
+        </div>
+
+        <div class="submenu" id="utilities-submenu">
+            <button class="menu-item" onclick="launchApp('Text Editor')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Text Editor</span>
+            </button>
+            <button class="menu-item" onclick="launchApp('File Manager')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">File Manager</span>
+            </button>
+            <button class="menu-item" onclick="launchApp('Image Viewer')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Image Viewer</span>
+            </button>
+        </div>
+
+        <div class="submenu" id="system-submenu">
+            <button class="menu-item" onclick="launchApp('Settings')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Settings</span>
+            </button>
+            <div class="menu-separator"></div>
+            <button class="menu-item" onclick="window.location = 'logon.html'">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Logout</span>
+            </button>
+        </div>
+
+        <!-- window layout -->
+        <!--<div class="window">
+            <div class="titlebar">
+                title
+                <div class="titlebar-lines"></div>
+                <button class="close-btn"><span class="button-text">×</span></button>
+            </div>
+            <iframe class="iframe-container"></iframe>
+        </div> -->
+
+        <script src="./js/functions.js"></script>
+    </body>
+</html>

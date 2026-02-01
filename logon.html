@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            /* font face declarations */
+            @font-face {
+                font-family: 'terminus';
+                src: url('./fonts/terminus-reg.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold';
+                src: url('./fonts/terminus-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }  
+
+            @font-face {
+                font-family: 'terminus-ital';
+                src: url('./fonts/terminus-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold-ital';
+                src: url('./fonts/terminus-bold-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'tamzen-bold';
+                src: url('./fonts/tamzen-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'spleen-bold';
+                src: url('./fonts/spleen_bold.otf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'unifont';
+                src: url('./fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            /* the fun stuff */
+
+            body {
+                font-family: 'terminus';
+                color: white;
+                font-size: 18px;
+                background-color: #202020;
+                display: flex;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+            }
+
+            .window {
+                background-color: #3b3c3e;
+                width: 600px;
+                font-size: 17px;
+                height: 310px;
+                font-family: 'terminus';
+                display: flex;
+                border: 3px outset #323334;
+                flex-direction: column;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .titlebar {
+                height: 30px;
+                background-image: linear-gradient(to right, #424254, #9696b4);
+                width: 99%;
+                font-size: 18px;
+                font-family: 'spleen-bold';
+                text-shadow: 2px 2px #282835;
+                align-items: center;
+                display: flex;
+                padding-left: 5px;
+            }
+
+            .titlebar-lines {
+                background-image: repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    transparent 1px,
+                    rgba(0,0,0,0.5) 2px,
+                    rgba(0,0,0,0.5) 3px
+                );
+                flex-grow: 1;
+                height: 100%;
+                margin-left: 10px;
+            }
+
+            .banner {
+                margin-top: 5px;
+                width: 99.8%
+            }
+
+            .form {
+                border: 3px inset #323334;
+                width: 580px;
+                flex-direction: column;
+                height: 120px;
+                margin: 10px auto;
+                display: flex;
+            }
+
+            .separator {
+                height: 7.5px;
+                width: 99.8%;
+                background-image: linear-gradient(to left, #9696b4, #424254);
+            }
+
+            .username-container {
+                width: 562.5px;
+                margin-left: 5px;
+                margin-right: 5px;
+                margin-top: 5px;
+                border: 1px solid #505253;
+                height: 30px;
+                align-items: center;
+                display: flex;
+                padding-left: 5px;
+            }
+
+            .user-tb {
+                width: 440px;
+                margin-left: 20px;
+                margin-right: 5px;
+                height: 20px;
+                border: 2px inset #464748;
+                font-family: 'terminus';
+                background-color: white;
+                color: black;
+            }
+
+            .passwd-container {
+                width: 562.5px;
+                margin-left: 5px;
+                margin-right: 5px;
+                margin-top: 5px;
+                border: 1px solid #505253;
+                height: 30px;
+                align-items: center;
+                display: flex;
+                padding-left: 5px;
+            }
+
+            .passwd-tb {
+                width: 440px;
+                margin-left: 20px;
+                margin-right: 5px;
+                height: 20px;
+                font-family: 'terminus';
+                border: 2px inset #464748;
+                background-color: white;
+                color: black;
+
+            }
+
+            .dark-button {
+                border: 2px outset #464748;
+                width: 80px;
+                height: 30px;
+                color: white;
+                background-color: #3b3c3e;
+                font-family: 'terminus';
+                font-size: 16px;
+                margin-bottom: 10px;
+                margin-left: 0px;
+            }
+
+            .tonal-button {
+                border: 2px outset #30303c;
+                width: 80px;
+                height: 30px;
+                color: white;
+                background-color: #424254;
+                font-family: 'terminus';
+                font-size: 16px;
+                text-shadow: 2px 2px #282835;
+                margin-bottom: 10px;
+                margin-left: 0px;
+            }
+
+            .button-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-right: 10px;
+            }
+
+            .topbar {
+                width: 100%;
+                height: 25px;
+                margin: 0 auto;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                background-color: #323232;
+                font-family: 'terminus';
+                border-bottom: 2px solid #363738;
+            }
+
+            .tb-button {
+                font-family: 'terminus';
+                margin-right: 10px;
+                background-color: transparent;
+                color: white;
+                height: 30px;
+                align-items: center;
+                border: none;
+                font-size: 16px;
+                display: flex;
+            }
+
+            .tb-button:hover {
+                background-color: rgba(255,255,255,0.05);
+            }
+
+            .tb-button-sel {
+                font-family: 'spleen-bold';
+                margin-right: 10px;
+                margin-left: 10px;
+                height: 30px;
+                background-color: transparent;
+                color: white;
+                border: none;
+                font-size: 16px;
+                justify-content: center;
+                display: flex;
+                align-items: center;
+            }
+
+            .tb-button-sel:hover {
+                background-color: rgba(255,255,255,0.05);
+            }
+
+            .tb-button-sel.active {
+                background-color: rgba(255,255,255,0.05);
+            }
+
+            .topbar-lines {
+                background-image: repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    transparent 1px,
+                    rgba(0,0,0,0.2) 2px,
+                    rgba(0,0,0,0.2) 3px
+                );
+                flex-grow: 1;
+                height: 100%;
+                margin-right: 10px;
+            }
+
+            .time-display {
+                margin-right: 10px;
+                font-size: 16px;
+                color: white;
+            }
+
+            .date-display {
+                margin-right: 10px;
+                font-size: 16px;
+                color: white;
+            }
+
+            .c-checkbox {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                width: 98%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 5px;
+                margin-top: 5px;
+                font-family: terminus;
+                font-size: 16px;
+                border: 1px solid #505253;
+                color: white;
+                user-select: none;
+                gap: 8px;
+            }
+
+            .c-checkbox input {
+                display: none;
+            }
+
+            .checkbox-bx {
+                width: 16px;
+                height: 16px;
+                background-color: #2a2a2a;
+                image-rendering: pixelated;
+                border: 2px inset #464748;
+                display: inline-block;
+                position: relative;
+            }
+
+            .c-checkbox input:checked + .checkbox-bx::after {
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 4px;
+                width: 4px;
+                height: 8px;
+                border: solid #fff;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+
+            .context-menu-lgn {
+                width: 130px;
+                display: none;
+                position: absolute;
+                flex-direction: column;
+                background-color: #2a2a2a;
+                border: 1.5px solid #464748;
+                color: white;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+                overflow: hidden;
+                margin-top: 3px;
+            }
+
+            .menu-item {
+                font-family: 'terminus';
+                background-color: transparent;
+                color: white;
+                border: 0;
+                font-size: 16px;
+                height: 25px;
+                display: flex;
+                align-items: center;
+                padding: 0;
+                width: 100%;
+            }
+
+            .menu-item:hover {
+                background-color: #7b7bac;
+                border: none;
+            }
+
+            .context-menu-thing {
+                width: 20px;
+                height: 100%;
+                background-color: #2f3030;
+                image-rendering: pixelated;
+            }
+
+            .m-text {
+                padding-left: 5px;
+            }
+
+            .taskbar {
+                background-color: #323232;
+                border: 2px solid #363738;
+                width: 100%;
+                height: 50px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="topbar">
+            <button class="tb-button-sel" id="loginAppBtn">Login Manager</button>
+            <button class="tb-button" onclick="alert('Login Manager v1.0.0')">About</button>
+            <div class="topbar-lines"></div>
+            <p class="time-display" id="time">00:00</p>
+            <p> |&nbsp;</p>
+            <p class="date-display" id="date">0/0/0</p>
+        </div>
+
+        <div class="context-menu-lgn">
+             <button class="menu-item" onclick="alert('Login Manager v1.0.0')">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">About...</span>
+            </button>
+            <button class="menu-item" onclick="reboot()">
+                <div class="context-menu-thing"></div>
+                <span class="m-text">Reboot...</span>
+            </button>
+        </div>
+
+        <div class="window">
+            <div class="titlebar">
+                Log in to SkylineOS
+                <div class="titlebar-lines"></div>
+            </div>
+            <img src="./icons/skyline2.png" class="banner">
+            <div class="separator"></div>
+            <div class="form">
+                <div class="username-container">
+                    User name:
+                    <input class="user-tb" placeholder="hint: the username is admin" type="text">
+                </div>
+                <div class="passwd-container">
+                    Password:&nbsp;
+                    <input class="passwd-tb" placeholder="hint: the password is 123456" type="password">
+                </div>
+                <label class="c-checkbox">
+                    <input type="checkbox">
+                    <span class="checkbox-bx"></span>
+                    Automatically sign in from now on
+                </label>
+            </div>
+            <div class="button-row">
+                <button class="tonal-button" onclick="checkCreds()">Log in</button>
+                <button class="dark-button" onclick="reboot()">Reboot</button>
+            </div>
+        </div>
+        <script>
+            // time display logic
+            function updateDT() {
+                const now = new Date();
+
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                document.getElementById('time').textContent = `${hours}:${minutes}`;
+
+                const day = now.getDate();
+                const month = now.getMonth() + 1;
+                const year = now.getFullYear().toString().slice(-2);
+                document.getElementById('date').textContent = `${day}/${month}/${year}`;
+            }
+
+            updateDT();
+            setInterval(updateDT, 30000);
+
+            // authentication
+            function checkCreds() {
+                const userInput = document.querySelector('.user-tb').value;
+                const passInput = document.querySelector('.passwd-tb').value;
+                const autoLogin = document.querySelector('.c-checkbox input').checked;
+
+                if (userInput === 'admin' && passInput === '123456') {
+                    if (autoLogin) {
+                        localStorage.setItem('skylineOS_autologin', 'true');
+                    } else {
+                        localStorage.removeItem('skylineOS_autologin');
+                    }
+                    window.location = "desktop.html";
+                } else {
+                    alert('Invalid credentials! Please try again.');
+                }
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                    if (localStorage.getItem('skylineOS_autologin') === 'true') {
+                        document.querySelector('.user-tb').value = 'admin';
+                        document.querySelector('.passwd-tb').value = '123456';
+                        checkCreds();
+                    }
+            })
+
+            // universal reboot which js goes to shutdown and then bootloader
+            function reboot() {
+                window.location = 'shutdown.html';
+            }
+
+            // context menu stuff
+            const loginAppBtn = document.getElementById('loginAppBtn');
+            const contextMenuLgn = document.querySelector('.context-menu-lgn');
+
+            function showContextLgn() {
+                const rect = loginAppBtn.getBoundingClientRect();
+                contextMenuLgn.style.left = `${rect.left}px`;
+                contextMenuLgn.style.top = `${rect.bottom}px`;
+                contextMenuLgn.style.display = 'flex';
+            }
+
+            loginAppBtn.addEventListener('click', () => {
+                if (contextMenuLgn.style.display === 'flex') {
+                    contextMenuLgn.style.display = 'none';
+                    loginAppBtn.classList.remove('active');
+                } else {
+                    showContextLgn();
+                    loginAppBtn.classList.add('active');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!contextMenuLgn.contains(e.target) && e.target !== loginAppBtn) {
+                    contextMenuLgn.style.display = 'none';
+                    loginAppBtn.classList.remove('active');
+                }
+            })
+        </script>
+    </body>
+</html>

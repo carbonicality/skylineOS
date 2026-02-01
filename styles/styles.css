@@ -1,0 +1,517 @@
+            /* font face declarations */
+            /* its indented a bunch because i took it from my desktop html page and put it into here */
+            @font-face {
+                font-family: 'terminus';
+                src: url('../fonts/terminus-reg.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold';
+                src: url('../fonts/terminus-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }  
+
+            @font-face {
+                font-family: 'terminus-ital';
+                src: url('../fonts/terminus-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold-ital';
+                src: url('../fonts/terminus-bold-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'tamzen-bold';
+                src: url('../fonts/tamzen-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'spleen-bold';
+                src: url('../fonts/spleen_bold.otf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'unifont';
+                src: url('../fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            /* the fun stuff */
+
+            body {
+                font-family: 'terminus';
+                color: white;
+                font-size: 18px;
+                background-color: #202020;
+                display: flex;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+            }
+
+            .window {
+                background-color: #3b3c3e;
+                width: 600px;
+                font-size: 17px;
+                height: 310px;
+                font-family: 'terminus';
+                display: flex;
+                border: 3px outset #323334;
+                flex-direction: column;
+                position: absolute;
+            }
+
+            .titlebar {
+                height: 30px;
+                background-image: linear-gradient(to right, #424254, #9696b4);
+                width: 99%;
+                font-size: 18px;
+                font-family: 'spleen-bold';
+                text-shadow: 2px 2px #282835;
+                align-items: center;
+                display: flex;
+                padding-left: 5px;
+            }
+
+            .titlebar-lines {
+                background-image: repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    transparent 1px,
+                    rgba(0,0,0,0.5) 2px,
+                    rgba(0,0,0,0.5) 3px
+                );
+                flex-grow: 1;
+                height: 100%;
+                margin-left: 10px;
+                margin-right: 5px;
+            }
+
+            .text-container {
+                width: 562.5px;
+                margin-left: 5px;
+                margin-right: 5px;
+                margin-top: 5px;
+                border: 1px solid #505253;
+                height: 30px;
+                align-items: center;
+                display: flex;
+                padding-left: 5px;
+            }
+
+            .text-tb {
+                width: 440px;
+                margin-left: 20px;
+                margin-right: 5px;
+                height: 20px;
+                border: 2px inset #464748;
+                font-family: 'terminus';
+                background-color: white;
+                color: black;
+            }
+
+            .dark-button {
+                border: 2px outset #464748;
+                width: 80px;
+                height: 30px;
+                color: white;
+                background-color: #3b3c3e;
+                font-family: 'terminus';
+                font-size: 16px;
+                margin-bottom: 10px;
+                margin-left: 0px;
+            }
+
+            .tonal-button {
+                border: 2px outset #30303c;
+                width: 80px;
+                height: 30px;
+                color: white;
+                background-color: #424254;
+                font-family: 'terminus';
+                font-size: 16px;
+                text-shadow: 2px 2px #282835;
+                margin-bottom: 10px;
+                margin-left: 0px;
+            }
+
+            .button-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-right: 10px;
+            }
+
+            .topbar {
+                width: 100%;
+                height: 25px;
+                margin: 0 auto;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                background-color: #323232;
+                font-family: 'terminus';
+                border-bottom: 2px solid #363738;
+            }
+
+            .tb-button {
+                font-family: 'terminus';
+                margin-right: 10px;
+                background-color: transparent;
+                color: white;
+                height: 30px;
+                align-items: center;
+                border: none;
+                font-size: 16px;
+                display: flex;
+            }
+
+            .tb-button:hover {
+                background-color: rgba(255,255,255,0.05);
+            }
+
+            .tb-button-sel {
+                font-family: 'spleen-bold';
+                margin-right: 10px;
+                margin-left: 10px;
+                height: 30px;
+                background-color: transparent;
+                color: white;
+                border: none;
+                font-size: 16px;
+                justify-content: center;
+                display: flex;
+                align-items: center;
+            }
+
+            .tb-button-sel:hover {
+                background-color: rgba(255,255,255,0.05);
+            }
+
+            .tb-button-sel.active {
+                background-color: rgba(255,255,255,0.05);
+            }
+
+            .topbar-lines {
+                background-image: repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    transparent 1px,
+                    rgba(0,0,0,0.2) 2px,
+                    rgba(0,0,0,0.2) 3px
+                );
+                flex-grow: 1;
+                height: 100%;
+                margin-right: 10px;
+            }
+
+            .time-display {
+                margin-right: 10px;
+                font-size: 16px;
+                color: white;
+            }
+
+            .date-display {
+                margin-right: 10px;
+                font-size: 16px;
+                color: white;
+            }
+
+            .c-checkbox {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                width: 98%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 5px;
+                margin-top: 5px;
+                font-family: terminus;
+                font-size: 16px;
+                border: 1px solid #505253;
+                color: white;
+                user-select: none;
+                gap: 8px;
+            }
+
+            .c-checkbox input {
+                display: none;
+            }
+
+            .checkbox-bx {
+                width: 16px;
+                height: 16px;
+                background-color: #2a2a2a;
+                image-rendering: pixelated;
+                border: 2px inset #464748;
+                display: inline-block;
+                position: relative;
+            }
+
+            .c-checkbox input:checked + .checkbox-bx::after {
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 4px;
+                width: 4px;
+                height: 8px;
+                border: solid #fff;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+
+            .context-menu-lgn {
+                width: 130px;
+                display: none;
+                position: absolute;
+                flex-direction: column;
+                background-color: #2a2a2a;
+                border: 1.5px solid #464748;
+                color: white;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+                overflow: hidden;
+                z-index: 2501;
+            }
+
+            .context-menu-apps {
+                width: 150px;
+                display: none;
+                position: fixed;
+                flex-direction: column;
+                background-color: #2a2a2a;
+                border: 1.5px solid #464748;
+                color: white;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+                overflow: hidden;
+                z-index: 2501;
+            }
+
+            .submenu {
+                width: 150px;
+                display: none;
+                position: fixed;
+                flex-direction: column;
+                background-color: #2a2a2a;
+                border: 1.5px solid #464748;
+                color: white;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+                overflow: hidden;
+                z-index: 2501;
+            }
+
+            .menu-item {
+                font-family: 'terminus';
+                background-color: transparent;
+                color: white;
+                border: 0;
+                font-size: 16px;
+                height: 25px;
+                display: flex;
+                align-items: center;
+                padding: 0;
+                width: 100%;
+                position: relative;
+            }
+
+            .menu-item:hover {
+                background-color: #7b7bac;
+                border: none;
+            }
+
+            .menu-item.with-arrow::after {
+                content: '▶';
+                position: absolute;
+                right: 5px;
+                font-size: 12px;
+            }
+
+            .menu-separator {
+                height: 1px;
+                background-color: #464748;
+                width: 100%;
+                margin: 2px 0;
+            }
+
+            .context-menu-thing {
+                width: 20px;
+                height: 100%;
+                background-color: #2f3030;
+                image-rendering: pixelated;
+            }
+
+            .m-text {
+                padding-left: 5px;
+            }
+
+            .close-btn {
+                height: 21px;
+                width: 21px;
+                background-color: #464748;
+                border: 2.5px outset #464748;
+                font-size: 20px;
+                margin-right: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: 'terminus';
+            }
+
+            .control-btn {
+                height: 21px;
+                width: 21px;
+                background-color: #464748;
+                border: 2.5px outset #464748;
+                font-size: 20px;
+                color: white;
+                margin-right: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: 'terminus';
+            }
+
+            .control-btn:hover {
+                background-color: #555;
+            }
+
+            .window-controls {
+                display: flex;
+                gap: 2px;
+            }
+
+            .window.maximised {
+                width: calc(100vw - 10px) !important;
+                height: calc(100vh - 65px) !important;
+                top: 25px !important;
+                left: 0 !important;
+                transform: none !important;
+            }
+
+            .window.minimised {
+                display: none;
+            }
+
+            .button-text {
+                color: white;
+                text-shadow: none;
+                font-size: 20.5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .iframe-container {
+                width: 100%;
+                height: 100%;
+                margin-top: 2.5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: rgb(0, 0, 0);
+                border: 0;
+            }
+
+            .iframe-container iframe {
+                width: 100%;
+                height: 100%;
+                border: none;
+                display: block;
+            }
+
+            .taskbar {
+                background-color: #323232;
+                border: 2px solid #363738;
+                width: 100%;
+                height: 30px;
+                bottom: 0;
+                position: fixed;
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+            }
+
+            .info-container {
+                height: 25px;
+                border: 2px inset #383939;
+                background-color: #323232;
+                display: flex;
+                position: absolute;
+                align-items: center;
+                right: 10px;
+            }
+
+            .appBtn {
+                width: 100px;
+                height: 27px;
+                border: 2px outset #363738;
+                font-family: 'spleen-bold';
+                margin-left: 3px;
+                background-color: #323232;
+                color: white;
+                font-size: 16px;
+                z-index: 2001;
+                justify-content: flex-start;
+                display: flex;
+                align-items: center;
+                padding-left: 8px;
+            }
+
+            .appBtn.active {
+                border: 2px inset #363738;
+                background-color: #2d2d2d;
+            }
+
+            .taskbar-apps {
+                display: flex;
+                gap: 2px;
+                margin-left: 5px;
+            }
+
+            .tbBtn {
+                width: 150px;
+                height: 27px;
+                border: 2px outset #363738;
+                font-family: 'terminus';
+                margin-left: 3px;
+                background-color: #323232;
+                color: white;
+                font-size: 16px;
+                z-index: 2001;
+                justify-content: flex-start;
+                display: flex;
+                align-items: center;
+                padding-left: 8px;
+            }
+
+            .tbBtn.active {
+                border: 2px inset #363738;
+                background-color: #2d2d2d;
+                font-family: 'spleen-bold';
+            }
+
+            .window.inactive .titlebar {
+                background-image: linear-gradient(to right, #5a5a5a, #7a7a7a);
+            }
+
+            .window iframe {
+                pointer-events: auto;
+                outline: none;
+                border: none;
+            }
+
+            .window.active iframe {
+                z-index: 1;
+            }

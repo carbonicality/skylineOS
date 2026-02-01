@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            @font-face {
+                font-family: 'terminus';
+                src: url('../fonts/terminus-reg.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold';
+                src: url('../fonts/terminus-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }  
+
+            @font-face {
+                font-family: 'terminus-ital';
+                src: url('../fonts/terminus-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold-ital';
+                src: url('../fonts/terminus-bold-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'tamzen-bold';
+                src: url('../fonts/tamzen-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'spleen-bold';
+                src: url('../fonts/spleen_bold.otf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'unifont';
+                src: url('../fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            body {
+                font-family: 'terminus';
+                color: white;
+                font-size: 18px;
+                background-color: #272727;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .game {
+                flex: 1;
+                margin: 5px 5px 5px 5px;
+                background-color: #272727;
+                border: 2px outset #1f1f1f;
+                padding: 10px;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+
+            .score-box {
+                height: 50px;
+                margin: 5px 5px 0 5px;
+                background-color: #272727;
+                border: 2px outset #1f1f1f;
+                padding: 10px;
+                box-sizing: border-box;
+                overflow-y: auto;
+                align-items: center;
+                justify-content: space-between;
+                display: flex;
+            }
+
+            .sc-text {
+                font-size: 24px;
+                font-family: 'spleen-bold';
+                color: white;
+                text-shadow: 2px 2px #141414;
+            }
+
+            .reset-btn {
+                background-color: #272727;
+                border: 2px outset #1f1f1f;
+                color: white;
+                font-family: 'terminus';
+                font-size: 14px;
+                padding: 5px 12px;
+                cursor: pointer;
+            }
+
+            .reset-btn:hover {
+                background-color: #3f3f3f;
+            }
+
+            .reset-btn:active {
+                border: 2px inset #1f1f1f;
+            }
+
+            #gameCanvas {
+                border: 2px inset #1f1f1f;
+                display: block;
+                margin: 0 auto;
+                width: 95%;
+                height: 95%;
+            }
+
+            .game-over {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #272727;
+                border: 2px outset #1f1f1f;
+                padding: 20px;
+                text-align: center;
+                display: none;
+                z-index: 1000;
+            }
+
+            .game-over h2 {
+                margin-top: 0;
+                font-family: 'spleen-bold';
+                text-shadow: 2px 2px #141414;
+            }
+
+            .btn {
+                background-color: #272727;
+                border: 2px outset #1f1f1f;
+                color: white;
+                padding: 6px 12px;
+                font-family: 'terminus';
+                font-size: 12px;
+                cursor: pointer;
+                margin: 5px;
+            }
+
+            .btn:active {
+                border: 2px inset #1f1f1f;
+            }
+
+            .btn:hover {
+                background-color: #3f3f3f;
+            }
+        </style>
+        <body>
+            <div class="score-box">
+                <div class="sc-text"><span id="score">0</span></div>
+                <button class="reset-btn" onclick="resetGame()">Reset</button>
+            </div>
+            <div class="game">
+                <canvas id="gameCanvas"></canvas>
+            </div>
+            <div class="game-over" id="gameOverEl">
+                <h2>Game over :(</h2>
+                <p>Your final score was: <span id="finalScore">0</span></p>
+                <button class="btn" onclick="resetGame()">Retry</button>
+            </div>
+        </body>
+        <script>
+            let tilesX, tilesY, canvasWidth, canvasHeight;
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const scoreElement = document.getElementById('score');
+            const gameOverEl = document.getElementById('gameOverEl');
+            const finalScoreElement = document.getElementById('finalScore');
+
+            const gridSize = 20;
+            const tileCount = canvas.width / gridSize;
+
+            let snake = [
+                {x: 10, y: 10}
+            ];
+
+            let food = {};
+            let dx = 0;
+            let dy = 0;
+            let score = 0;
+            let gameRunning = false;
+            let gameStarted = false;
+
+            function init() {
+                resizeCanvas();
+                resetGame();
+                gameLoop();
+            }
+            
+            function generateFood() {
+                food = {
+                    x: Math.floor(Math.random() * (canvas.width / gridSize)),
+                    y: Math.floor(Math.random() * (canvas.height / gridSize))
+                };
+
+                for (let segment of snake) {
+                    if (segment.x === food.x && segment.y === food.y) {
+                        generateFood();
+                        return;
+                    }
+                }
+            }
+
+            function resetGame() {
+                snake = [{x: 10, y: 10}];
+                dx = 0;
+                dy = 0;
+                score = 0;
+                scoreElement.textContent = score;
+                gameOverEl.style.display = 'none';
+                gameRunning = true;
+                gameStarted = false;
+                generateFood();
+            }
+
+            function drawGame() {
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#4CAF50';
+                for (let segment of snake) {
+                    ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+                }
+
+                if (snake.length > 0) {
+                    ctx.fillStyle = '#66BB6A';
+                    ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize - 2, gridSize - 2);
+                }
+
+                ctx.fillStyle = '#FF5722';
+                ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+            }
+
+            function updateGame() {
+                if (!gameRunning || !gameStarted) return;
+
+                const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+                if (head.x < 0 || head.x >= canvas.width/gridSize || head.y < 0 || head.y >= canvas.height / gridSize) {
+                    gameOver();
+                    return;
+                }
+
+                for (let segment of snake) {
+                    if (head.x === segment.x && head.y === segment.y) {
+                        gameOver();
+                        return;
+                    }
+                }
+
+                snake.unshift(head);
+
+                if (head.x === food.x && head.y === food.y) {
+                    score += 10;
+                    scoreElement.textContent = score;
+                    generateFood();
+                } else {
+                    snake.pop();
+                }
+            }
+
+            function gameOver() {
+                gameRunning = false;
+                finalScoreElement.textContent = score;
+                gameOverEl.style.display = 'block';
+            }
+
+            function gameLoop() {
+                updateGame();
+                drawGame();
+                setTimeout(gameLoop, 120);
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (!gameRunning) return;
+
+                const key = e.key.toLowerCase();
+
+                switch(key) {
+                    case 'arrowup':
+                    case 'w':
+                        if (dy !== 1) {
+                            dx = 0;
+                            dy = -1;
+                            gameStarted = true;
+                        }
+                        break;
+                    case 'arrowdown':
+                    case 's':
+                        if (dy !== -1) {
+                            dx = 0;
+                            dy = 1;
+                            gameStarted = true;
+                        }
+                        break;
+                    case 'arrowleft':
+                    case 'a':
+                        if (dx !== 1) {
+                            dx = -1;
+                            dy = 0;
+                            gameStarted = true;
+                        }
+                        break;
+                    case 'arrowright':
+                    case 'd':
+                        if (dx !== -1) {
+                            dx = 1;
+                            dy = 0;
+                            gameStarted = true;
+                        }
+                        break;
+                }
+            });
+
+            function resizeCanvas(){
+                const gameArea = document.querySelector('.game');
+                const maxWidth = gameArea.clientWidth - 40;
+                const maxHeight = gameArea.clientHeight - 40;
+
+                tilesX = Math.floor(Math.min(maxWidth, 800) / gridSize);
+                tilesY = Math.floor(Math.min(maxHeight, 600) / gridSize);
+
+                tilesX = Math.max(tilesX, 15);
+                tilesY = Math.max(tilesY, 10);
+
+                canvasWidth = tilesX * gridSize;
+                canvasHeight = tilesY * gridSize;
+
+                canvas.width = tilesX * gridSize;
+                canvas.height = tilesY * gridSize;
+                
+            }
+
+            window.addEventListener('resize', () => {
+                if (!gameRunning || !gameStarted) {
+                    resetGame();
+                }
+            });
+
+            init();
+        </script>
+    </head>
+</html>

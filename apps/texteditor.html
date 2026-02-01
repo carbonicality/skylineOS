@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            @font-face {
+                font-family: 'terminus';
+                src: url('../fonts/terminus-reg.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold';
+                src: url('../fonts/terminus-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }  
+
+            @font-face {
+                font-family: 'terminus-ital';
+                src: url('../fonts/terminus-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold-ital';
+                src: url('../fonts/terminus-bold-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'tamzen-bold';
+                src: url('../fonts/tamzen-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'spleen-bold';
+                src: url('../fonts/spleen_bold.otf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'unifont';
+                src: url('../fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            body {
+                font-family: 'terminus';
+                color: white;
+                font-size: 18px;
+                background-color: #272727;
+                height: 100vh;
+                margin: 0;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .main-content {
+                display: flex;
+                flex: 1;
+                overflow: hidden;
+                padding: 0 5px 5px 5px;
+            }
+
+            .header-sec {
+                flex-shrink: 0;
+            }
+
+            .main-area {
+                flex: 1;
+                background-color: #272727;
+            }
+
+            .selector-bar {
+                width: calc(100% - 10px);
+                height: 30px;
+                margin: 5px;
+                margin-bottom: 0;
+                border: 1.5px solid #1f1f1f;
+                align-items: center;
+                display: flex;
+            }
+
+            .selector-btn {
+                background-color: transparent;
+                font-family: 'unifont';
+                color: white;
+                margin-left: 5px;
+                margin-right: 2.5px;
+                border: none;
+                font-size: 15px;
+            }
+
+            .divider {
+                height: 20px;
+                width: 1.5px;
+                background-color: #1f1f1f;
+                margin-right: 5px;
+                margin-left: 5px;
+            }
+
+            .opt-bar {
+                width: calc(100% - 10px);
+                height: 30px;
+                margin: 0 5px 5px 5px;
+                border: 1.5px solid #1f1f1f;
+                border-top: none;
+                align-items: center;
+                display: flex;
+            }
+
+            .opt-btn {
+                background-color: transparent;
+                font-family: 'unifont';
+                color: white;
+                margin-left: 5px;
+                margin-right: 2.5px;
+                border: none;
+                font-size: 15px;
+            }
+
+            #text-editor {
+                flex: 1;
+                background-color: #1a1a1a;
+                color: #ffffff;
+                border: 2px solid #444444;
+                font-family: 'terminus';
+                font-size: 16px;
+                padding: 10px;
+                resize: none;
+                outline: none;
+                line-height: 1.2;
+                width: 100%;
+                min-height: 500px;
+                height: 100%;
+                box-sizing: border-box;
+            }
+
+            #text-editor::placeholder {
+                color: #666;
+                font-style: italic;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header-sec">
+            <div class="selector-bar">
+                <button class="selector-btn" id="new-btn">New</button>
+                <button class="selector-btn" id="open-btn">Open</button>
+                <button class="selector-btn" id="save-btn">Save</button>
+                <button class="selector-btn" id="save-as-btn">Save As</button>
+                <div class="divider"></div>
+                <button class="selector-btn" id="file-menu-btn">File</button>
+                <button class="selector-btn" id="change-dir-btn">Change directory</button>
+            </div>
+            <div class="opt-bar">
+                <span style="font-family: 'unifont'; font-size: 15px; margin-left: 10px;">File:</span>
+                <span id="current-file-name" style="font-family: 'unifont'; font-size: 15px; margin-left: 5px; color: #ffeb3b;">Untitled</span>
+                <span id="file-modified" style="font-family: 'unifont'; font-size: 15px; margin-left: 5px; color: #ff6b6b; display: none;">*</span>
+                <p style="font-family: 'unifont'; margin-left: 10px; font-size: 15px;">Directory:</p>
+                <span id="current-directory" style="font-family: 'unifont'; font-size: 15px; margin-left: 5px; color: #81c784;"></span>
+            </div>
+            <div class="main-content" style="flex-direction: column; padding: 5px;">
+                <textarea id="text-editor" placeholder="Start typing..."></textarea>
+            </div>
+        </div>
+    </body>
+    <script src="../js/filesystem.js"></script>
+    <script>
+        class TextEditor {
+            constructor() {
+                this.filesystem = new SkylineFilesystem();
+                this.currentFile = null;
+                this.currentPath = '/Documents';
+                this.isModified = false;
+                this.init();
+            }
+
+            init() {
+                this.editor = document.getElementById('text-editor');
+                this.fileNameEl = document.getElementById('current-file-name');
+                this.modifiedEl = document.getElementById('file-modified');
+                this.currentDirEl = document.getElementById('current-directory');
+
+                this.filesystem.navigateTo('/Documents');
+                this.currentPath = this.filesystem.getCurrentPath();
+                this.currentDirEl.textContent = this.currentPath;
+
+                this.editor.addEventListener('input', () => {
+                    this.setModified(true);
+                });
+
+                document.getElementById('new-btn').addEventListener('click', () => this.newFile());
+                document.getElementById('open-btn').addEventListener('click', () => this.openFile());
+                document.getElementById('save-btn').addEventListener('click', () => this.saveFile());
+                document.getElementById('save-as-btn').addEventListener('click', () => this.saveAsFile());
+                document.getElementById('file-menu-btn').addEventListener('click', () => this.showFileMenu());
+                document.getElementById('change-dir-btn').addEventListener('click', () => this.changeDirectory());
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey) {
+                        switch(e.key) {
+                            case 'n':
+                                e.preventDefault();
+                                this.newFile();
+                                break;
+                            case 'o':
+                                e.preventDefault();
+                                this.openFile();
+                                break;
+                            case 's':
+                                e.preventDefault();
+                                if (e.shiftKey) {
+                                    this.saveAsFile();
+                                } else {
+                                    this.saveFile();
+                                }
+                            break;
+                        }
+                    }
+                });
+
+                window.addEventListener('beforeunload', (e) => {
+                    if (this.isModified) {
+                        e.preventDefault();
+                        return 'whoa there! you have unsaved changes. are you SURE you wanna continue?';
+                    }
+                });
+            }
+
+            newFile() {
+                if (this.isModified && !confirm('whoa there! you have unsaved changes. are you SURE you wanna create a file anyway?')) {
+                    return;
+                }
+
+                this.editor.value = '';
+                this.currentFile = null;
+                this.fileNameEl.textContent = 'Untitled';
+                this.setModified(false);
+                this.editor.focus();
+            }
+
+            openFile() {
+                if (this.isModified && !confirm('whoa there! you have unsaved changes. are you SURE you wanna open another file anyway?')) {
+                    return;
+                }
+
+                const fileName = prompt('enter the filename to open (from Documents): ');
+                if (!fileName) return;
+
+                const content = this.filesystem.getFileContent(fileName, '/Documents');
+                if (content !== null) {
+                    this.editor.value = content;
+                    this.currentFile = fileName;
+                    this.fileNameEl.textContent = fileName;
+                    this.setModified(false);
+                    this.editor.focus();
+                } else {
+                    alert('oh no! file not found: ' + fileName);
+                }
+            }
+
+            saveFile() {
+                if (!this.currentFile) {
+                    this.saveAsFile();
+                    return;
+                }
+
+                const content = this.editor.value;
+                if (this.filesystem.updateFileContent(this.currentFile, content, '/Documents')) {
+                    this.setModified(false);
+                    alert('yay! file saved: ' + this.currentFile);
+                } else {
+                    alert('oh no! failed to save file: ' + this.currentFile);
+                }
+            }
+
+            saveAsFile() {
+                const fileName = prompt('enter filename to save as:');
+                if (!fileName) return;
+
+                const content = this.editor.value;
+        
+        
+                if (this.filesystem.getFileContent(fileName, '/Documents') !== null) {
+                    if (!confirm('are you sure you want to overwrite this existing file?')) {
+                        return;
+                    }
+            
+                    if (this.filesystem.updateFileContent(fileName, content, '/Documents')) {
+                        this.currentFile = fileName;
+                        this.fileNameEl.textContent = fileName;
+                        this.setModified(false);
+                        alert('successfully saved file: ' + fileName);
+                    } else {
+                        alert('uh oh! failed to save file: ' + fileName);
+                    }
+                } else {
+                    if (this.filesystem.createFile(fileName, content, '/Documents')) {
+                        this.currentFile = fileName;
+                        this.fileNameEl.textContent = fileName;
+                        this.setModified(false);
+                        alert('file successfully created: ' + fileName);
+                    } else {
+                        alert('uh oh! failed to create file: ' + fileName);
+                    }
+                }
+            }
+
+            setModified(modified) {
+                this.isModified = modified;
+                this.modifiedEl.style.display = modified ? 'inline' : 'none';
+            }
+
+            showFileMenu() {
+                const menu = [
+                    'New File',
+                    'Open File',
+                    'Save File',
+                    'Save As',
+                    'List files in /Documents',
+                    'Change directory'
+                ];
+                const choice = prompt('file menu:\n' + menu.map((item, i) => `${i+1}. ${item}`).join('\n') + '\n\nenter choice [1-6]: ');
+                const choiceNum = parseInt(choice);
+
+                switch(choiceNum) {
+                    case 1:
+                        this.newFile();
+                        break;
+                    case 2:
+                        this.openFile();
+                        break;
+                    case 3:
+                        this.saveFile();
+                        break;
+                    case 4:
+                        this.saveAsFile();
+                        break;
+                    case 5:
+                        this.listFiles();
+                        break;
+                    case 6:
+                        this.changeDirectory();
+                        break;
+                    }
+            }
+
+            listFiles() {
+                const { files } = this.filesystem.getCurrentDirContents();
+                this.filesystem.navigateTo('/Documents');
+                const { files: docFiles } = this.filesystem.getCurrentDirContents();
+
+                if (docFiles.length === 0) {
+                    alert('no files found in /Documents');
+                    return;
+                }
+
+                let fileList = 'files in /Documents:\n\n';
+                docFiles.forEach((file, i) => {
+                    fileList += `${i+1}. ${file.name} (${this.formatFileSize(file.size)})\n`;
+                });
+
+                const choice = prompt(fileList + '\nenter number to open file (or cancel):');
+                const choiceNum = parseInt(choice);
+
+                if (choiceNum > 0 && choiceNum <= docFiles.length) {
+                    const selectedFile = docFiles[choiceNum - 1];
+                    if (this.isModified && !confirm('you have unsaved changes - open file anyway?')) {
+                        return;
+                    }
+
+                    const content = this.filesystem.getFileContent(selectedFile.name, '/Documents');
+                    if (content !== null) {
+                        this.editor.value = content;
+                        this.currentFile = selectedFile.name;
+                        this.fileNameEl.textContent = selectedFile.name;
+                        this.setModified(false);
+                        this.editor.focus();
+                    }
+                }
+            }
+
+            formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+                return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+
+            changeDirectory() {
+                const newPath = prompt('enter directory path: (e.g: /Documents, /Desktop, /): ');
+                if (!newPath) return;
+
+                if (this.filesystem.navigateTo(newPath)) {
+                    this.currentPath = this.filesystem.getCurrentPath();
+                    this.currentDirEl.textContent = this.currentPath;
+                    alert(`changed directory to: ${this.currentPath}`);
+                } else {
+                    alert(`uh oh! directory: ${newPath} not found.`);
+                }
+            }
+        }
+
+        let textEditor;
+        document.addEventListener('DOMContentLoaded', () => {
+            textEditor = new TextEditor();
+        });
+    </script>
+</html> 

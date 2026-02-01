@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            @font-face {
+                font-family: 'terminus';
+                src: url('../fonts/terminus-reg.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold';
+                src: url('../fonts/terminus-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }  
+
+            @font-face {
+                font-family: 'terminus-ital';
+                src: url('../fonts/terminus-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'terminus-bold-ital';
+                src: url('../fonts/terminus-bold-ital.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'tamzen-bold';
+                src: url('../fonts/tamzen-bold.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'spleen-bold';
+                src: url('../fonts/spleen_bold.otf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'unifont';
+                src: url('../fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            body {
+                font-family: 'terminus';
+                color: white;
+                font-size: 18px;
+                background-color: #272727;
+                height: 100vh;
+                margin: 0;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .main-content {
+                display: flex;
+                flex: 1;
+                overflow: hidden;
+                padding: 0 5px 5px 5px;
+            }
+
+            .header-sec {
+                flex-shrink: 0;
+            }
+
+            .main-area {
+                flex: 1;
+                background-color: #272727;
+            }
+
+            .selector-bar {
+                width: calc(100% - 10px);
+                height: 30px;
+                margin: 5px;
+                margin-bottom: 0;
+                border: 1.5px solid #1f1f1f;
+                align-items: center;
+                display: flex;
+            }
+
+            .selector-btn {
+                background-color: transparent;
+                font-family: 'unifont';
+                color: white;
+                margin-left: 5px;
+                margin-right: 2.5px;
+                border: none;
+                font-size: 15px;
+                cursor: pointer;
+            }
+
+            .divider {
+                height: 20px;
+                width: 1.5px;
+                background-color: #1f1f1f;
+                margin-right: 5px;
+                margin-left: 5px;
+            }
+
+            .opt-bar {
+                width: calc(100% - 10px);
+                height: 30px;
+                margin: 0 5px 5px 5px;
+                border: 1.5px solid #1f1f1f;
+                border-top: none;
+                align-items: center;
+                display: flex;
+            }
+
+            .opt-btn {
+                background-color: transparent;
+                font-family: 'unifont';
+                color: white;
+                margin-left: 5px;
+                margin-right: 2.5px;
+                border: none;
+                font-size: 15px;
+            }
+
+            .image-viewer {
+                flex: 1;
+                background-color: #1a1a1a;
+                border: 2px solid #444444;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: auto;
+                position: relative;
+            }
+
+            .image-display {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+                display: none;
+            }
+
+            .placeholder {
+                color: #666;
+                font-style: italic;
+                text-align: center;
+                font-size: 16px;
+            }
+
+            .image-controls {
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #272727;
+                padding: 5px 10px;
+                border-radius: 5px;
+                display: none;
+            }
+
+            .control-btn {
+                background: transparent;
+                border: 1px solid #666;
+                color: white;
+                padding: 3px 8px;
+                margin: 0 2px;
+                cursor: pointer;
+                font-family: 'unifont';
+                font-size: 12px;
+            }
+
+            .control-btn:hover {
+                background: #444;
+            }
+
+            .zoom-info {
+                color: white;
+                font-size: 12px;
+                margin: 0 10px;
+            }
+
+            #file-input {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header-sec">
+            <div class="selector-bar">
+                <button class="selector-btn" id="open-local-btn">Open from Computer</button>
+                <button class="selector-btn" id="open-btn">Open from /Pictures</button>
+                <button class="selector-btn" id="save-btn">Save to /Pictures</button>
+                <div class="divider"></div>
+                <button class="selector-btn" id="files-menu-btn">File</button>
+            </div>
+            <div class="opt-bar">
+                <span style="font-family: 'unifont'; font-size: 15px; margin-left: 10px;">Image:</span>
+                <span id="current-file-name" style="font-family: 'unifont'; font-size: 15px; margin-left: 5px; color: #ffeb3b;"></span>
+                <p style="font-family: 'unifont'; margin-left: 10px; font-size: 15px;">Directory:</p>
+                <span id="current-directory" style="font-family: 'unifont'; font-size: 15px; margin-left: 5px; color: #81c784;"></span>
+            </div>
+            <div class="main-content" style="flex-direction: column; padding: 5px;">
+                <div class="image-viewer" id="image-viewer">
+                    <div class="placeholder" id="placeholder">
+                        No image loaded</br>
+                        <small>Click 'Open from Computer' or 'Open from /Pictures' to load an image!</small>
+                    </div>
+                    <img class="image-display" id="image-display"/>
+                    <div class="image-controls" id="image-controls">
+                        <button class="control-btn" id="zoom-out-btn">-</button>
+                        <span class="zoom-info" id="zoom-info">100%</span>
+                        <button class="control-btn" id="zoom-in-btn">+</button>
+                        <button class="control-btn" id="reset-zoom-btn">Reset</button>
+                        <button class="control-btn" id="fit-screen-btn">Fit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="file" id="file-input" accept="image/*" style="display: none;">
+    </body>
+    <script src="../js/filesystem.js"></script>
+    <script>
+        class ImageViewer {
+            constructor() {
+                this.filesystem = new SkylineFilesystem();
+                this.currentFile = null;
+                this.currentPath = '/Pictures';
+                this.currentImageData = null;
+                this.zoomLevel = 1;
+                this.init();
+            }
+
+            init() {
+                this.imageDisplay = document.getElementById('image-display');
+                this.placeholder = document.getElementById('placeholder');
+                this.fileNameEl = document.getElementById('current-file-name');
+                this.currentDirEl = document.getElementById('current-directory');
+                this.imageControls = document.getElementById('image-controls');
+                this.zoomInfo = document.getElementById('zoom-info');
+                this.fileInput = document.getElementById('file-input');
+
+                document.getElementById('open-local-btn').addEventListener('click', () => this.openFromComputer());
+                document.getElementById('open-btn').addEventListener('click', () => this.openFromPictures());
+                document.getElementById('save-btn').addEventListener('click', () => this.saveToPictures());
+                document.getElementById('files-menu-btn').addEventListener('click', () => this.showFileMenu());
+
+                document.getElementById('zoom-in-btn').addEventListener('click', () => this.zoomIn());
+                document.getElementById('zoom-out-btn').addEventListener('click', () => this.zoomOut());
+                document.getElementById('reset-zoom-btn').addEventListener('click', () => this.resetZoom());
+                document.getElementById('fit-screen-btn').addEventListener('click', () => this.fitToScreen());
+
+                this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'o') {
+                        e.preventDefault();
+                        this.openFromPictures();
+                    }
+
+                    if (this.currentImageData) {
+                        switch(e.key) {
+                            case '+':
+                            case '=':
+                                this.zoomIn();
+                                break;
+                            case '-':
+                                this.zoomOut();
+                                break;
+                            case '0':
+                                this.resetZoom();
+                                break;
+                        }
+                    }
+                });
+            }
+
+            openFromComputer() {
+                this.fileInput.click();
+            }
+
+            handleFileSelect(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith('image/')) {
+                    alert('please select an image file');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.displayImage(e.target.result, file.name);
+                    this.currentImageData = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            loadImageFromPath(filePath, fileName) {
+                const img = new Image();
+                img.onload = () => {
+                    this.displayImage(filePath, fileName);
+                    this.currentImageData = filePath;
+                };
+                img.onerror = () => {
+                    alert('uh oh! failed to display image from file path: ' + filePath);
+                };
+                img.src = filePath;
+            }
+
+            openFromPictures() {
+                this.filesystem.navigateTo('/Pictures');
+                const { files } = this.filesystem.getCurrentDirContents();
+                const imageFiles = files.filter(f => this.isImageFile(f.name));
+
+                if (imageFiles.length === 0) {
+                    alert('uh oh! no files found in pictures :(');
+                    return;
+                }
+
+                let fileList = 'image files in /Pictures: \n\n';
+                imageFiles.forEach((file, i) => {
+                    fileList += `${i+1}. ${file.name} (${this.formatFileSize(file.size)})\n`;
+                });
+
+                const choice = prompt(fileList + '\nenter number to open image (or cancel): ');
+                const choiceNum = parseInt(choice);
+
+                if (choiceNum > 0 && choiceNum <= imageFiles.length) {
+                    const selectedFile = imageFiles[choiceNum - 1];
+                    const fileData = this.filesystem.getItemAtPath('/Pictures' + selectedFile.name);
+                    const content = fileData.content;
+
+                    if (content !== null) {
+                        if (fileData.isFilePath) {
+                            this.loadImageFromPath(content, selectedFile.name);
+                        } else {
+                            this.displayImage(content, selectedFile.name);
+                            this.currentImageData = content;
+                        }
+                        this.currentFile = selectedFile.name;
+                    } else {
+                        alert('uh oh! failed to display image: ' + selectedFile.name);
+                    }
+                }
+            }
+
+            saveToPictures() {
+                if (!this.currentImageData) {
+                    alert('no image loaded to save');
+                    return;
+                }
+
+                const fileName = prompt('enter filename to save image (will be saved to /Pictures): ');
+                if (!fileName) return;
+
+                let finalFileName = fileName;
+                if (!this.isImageFile(fileName)) {
+                    finalFileName += '.jpg';
+                }
+
+                if (typeof this.currentImageData === 'string' && this.currentImageData.startsWith('../')) {
+                    alert('could not save file path refs. please load the actual data first.');
+                    return;
+                }
+
+                if (this.filesystem.getFileContent(finalFileName, '/Pictures') !== null) {
+                    if (!confirm('are you sure you want to overwrite this existing file?')) {
+                        return;
+                    }
+
+                    if (this.filesystem.updateFileContent(finalFileName, this.currentImageData, '/Pictures' !== 'null')) {
+                        this.currentFile = finalFileName;
+                        this.fileNameEl.textContent = finalFileName;
+                        alert('successfully saved image: ' + finalFileName);
+                    } else {
+                        alert('uh oh! failed to save image: ' + finalFileName);
+                    }
+                } else {
+                    if (this.filesystem.createFile(finalFileName, this.currentImageData, '/Pictures')) {
+                        this.currentFile = finalFileName;
+                        this.fileNameEl.textContent = finalFileName;
+                        alert('file successfully created: ' + finalFileName);
+                    } else {
+                        alert('uh oh! failed to create image: ' + finalFileName);
+                    }
+                }
+            }
+
+            displayImage(src, name) {
+                this.imageDisplay.src = src;
+                this.imageDisplay.style.display = 'block';
+                this.placeholder.style.display = 'none';
+                this.imageControls.style.display = 'block';
+                this.fileNameEl.textContent = name;
+                this.resetZoom();
+            }
+
+            zoomIn() {
+                this.zoomLevel = Math.min(this.zoomLevel * 1.2, 5);
+                this.updateZoom();
+            }
+
+            zoomOut() {
+                this.zoomLevel = Math.max(this.zoomLevel / 1.2, 0.1);
+                this.updateZoom();
+            }
+
+            resetZoom() {
+                this.zoomLevel = 1;
+                this.updateZoom();
+            }
+
+            fitToScreen() {
+                this.zoomLevel = 1;
+                this.imageDisplay.style.transform = 'scale(1)';
+                this.imageDisplay.style.maxWidth = '100%';
+                this.imageDisplay.style.maxHeight = '100%';
+                this.zoomInfo.textContent = 'Fit';
+            }
+
+            updateZoom() {
+                this.imageDisplay.style.transform = `scale(${this.zoomLevel})`;
+                this.imageDisplay.style.maxWidth = 'none';
+                this.imageDisplay.style.maxHeight = 'none';
+                this.zoomInfo.textContent = Math.round(this.zoomLevel * 100) + '%';
+            }
+
+            isImageFile(filename) {
+                const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico'];
+                const extension = filename.split('.').pop().toLowerCase();
+                return imageExtensions.includes(extension);
+            }
+
+            formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes / 1048576) return (bytes/1024).toFixed(1) + ' KB';
+                return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+
+            showFileMenu() {
+                const menu = [
+                    'Open from Computer',
+                    'Open from /Pictures',
+                    'Save to /Pictures',
+                    'List images in /Pictures'
+                ];
+                const choice = prompt('file menu:\n' + menu.map((item, i) => `${i+1}. ${item}`).join('\n') + '\n\nenter choice [1-4]: ');
+                const choiceNum = parseInt(choice);
+
+                switch(choiceNum) {
+                    case 1:
+                        this.openFromComputer();
+                        break;
+                    case 2:
+                        this.openFromPictures();
+                        break;
+                    case 3:
+                        this.saveToPictures();
+                        break;
+                    case 4:
+                        this.listImages();
+                        break;
+                }
+            }
+
+            listImages() {
+                this.filesystem.navigateTo('/Pictures');
+                const { files } = this.filesystem.getCurrentDirContents();
+                const imageFiles = files.filter(f => this.isImageFile(f.name));
+
+                if (imageFiles.length === 0) {
+                    alert('uh oh! no image files found in /Pictures');
+                    return;
+                }
+
+                let fileList = 'image files in /Pictures:\n\n';
+                imageFiles.forEach((file, i) => {
+                    fileList += `${i+1}. ${file.name} (${this.formatFileSize(file.size)})\n`;
+                });
+
+                alert(fileList);
+            }
+        }
+
+        let imageViewer;
+        document.addEventListener('DOMContentLoaded', () => {
+            imageViewer = new ImageViewer();
+        });
+    </script>
+</html>

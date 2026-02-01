@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SkylineOS</title>
+        <style>
+            @font-face {
+                font-family: 'unifont';
+                src: url('../fonts/unifont.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            body {
+                background-color: black;
+                color: white;
+            }
+
+            .user {
+                color: red;
+            }
+
+            .user-e {
+                color: #006aff;
+            }
+
+            .terminal {
+                font-family: 'unifont';
+                word-wrap: break-word;
+            }
+
+            .prompt-line {
+                display: flex;
+                align-items: center;
+            }
+
+            .command-input {
+                background-color: transparent;
+                color: white;
+                border: none;
+                outline: none;
+                font-family: 'unifont';
+                font-size: 16px;
+                flex: 1;
+                margin-left: 5px;
+            }
+
+            .output {
+                color: #fff;
+            }
+
+            .error {
+                color: white;
+                margin: 5px 0;
+            }
+
+            @keyframes blink {
+                0%, 50% { opacity: 1; }
+                51%, 100% {opacity: 0; }
+            }
+        </style>
+        <body>
+            <div class="terminal" id="terminal">
+                <div class="prompt-line">
+                    <span class="user">skylineos</span><span class="user-e"> / #</span>
+                    <input type="text" class="command-input" id="command-input" autofocus>
+                </div>
+            </div>
+            <script src="../js/terminal-functions.js"></script>
+            <script src="../js/functions.js"></script>
+        </body>
+    </head>
+</html>
